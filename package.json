@@ -1,6 +1,6 @@
 {
   "name": "Cozic-v2",
-  "version": "0.0.1",
+  "version": "0.3.0",
   "description": "Free & Open Source Music Cloud",
   "license": "MIT",
   "cozy-type": "static",
@@ -13,9 +13,11 @@
     "url": "https://github.com/flyingrub/cozy-music.git"
   },
   "dependencies": {
+    "async": "^2.0.0-rc.2",
     "backbone": "^1.2.3",
     "backbone.marionette": "^2.4.4",
     "backbone.radio": "^1.0.2",
+    "backbone.subroute": "^0.4.6",
     "cozysdk-client": "0.0.4",
     "jquery": "^2.2.0",
     "json-loader": "^0.5.4",
