@@ -1,16 +1,19 @@
 {
-  "name": "Cozic-v2",
-  "version": "0.3.0",
-  "description": "Free & Open Source Music Cloud",
-  "license": "MIT",
+  "name": "music",
+  "version": "0.3.1",
+  "description": "music description",
+  "license": "AGPL-3.0",
   "cozy-type": "static",
-  "cozy-displayName": "Cozic-v2",
+  "cozy-displayName": "Music",
   "cozy-color": "#3BDA6C",
   "icon-path": "app-icon.svg",
-  "author": "flyingrub",
+  "author": "Cozy Cloud <contact@cozycloud.cc> (https://cozy.io/)",
+  "contributors": [
+    "flyingrub (http://flyingrub.me)"
+  ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/flyingrub/cozy-music.git"
+    "url": "https://github.com/cozy-labs/cozy-music.git"
   },
   "dependencies": {
     "async": "^2.0.0-rc.2",
