@@ -1,6 +1,6 @@
 {
   "name": "music",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "music description",
   "license": "AGPL-3.0",
   "cozy-type": "static",
@@ -16,16 +16,16 @@
     "url": "https://github.com/cozy-labs/cozy-music.git"
   },
   "dependencies": {
-    "async": "^2.0.0-rc.2",
-    "backbone": "^1.2.3",
-    "backbone.marionette": "^2.4.4",
-    "backbone.radio": "^1.0.2",
-    "backbone.subroute": "^0.4.6",
-    "cozysdk-client": "0.0.4",
-    "jquery": "^2.2.0",
-    "json-loader": "^0.5.4",
-    "node-polyglot": "^1.0.0",
-    "underscore": "^1.8.3"
+    "async": "2.0.0-rc.2",
+    "backbone": "1.2.3",
+    "backbone.marionette": "2.4.4",
+    "backbone.radio": "1.0.2",
+    "backbone.subroute": "0.4.6",
+    "cozysdk-client": "0.0.5",
+    "jquery": "2.2.0",
+    "json-loader": "0.5.4",
+    "node-polyglot": "1.0.0",
+    "underscore": "1.8.3"
   },
   "devDependencies": {
     "autoprefixer": "6.3.3",
@@ -41,6 +41,7 @@
     "file-loader": "0.8.5",
     "html-webpack-plugin": "2.10.0",
     "lodash": "4.6.1",
+    "npm-run-all": "1.7.0",
     "postcss-loader": "0.8.1",
     "style-loader": "0.13.0",
     "stylus-loader": "1.5.1",
@@ -53,15 +54,22 @@
     "build": "env OPTIMIZE=true webpack",
     "clean": "rm -rf public",
     "copy:manifest": "cp package.json public/",
+    "tx": "tx pull --all || true",
     "postbuild": "npm run copy:manifest",
-    "prebuild": "npm run clean",
+    "prebuild": "npm-run-all clean tx",
     "prewatch": "npm run clean",
     "publish": "git subtree push --prefix public origin build",
     "watch": "webpack --display-modules --display-chunks --watch"
   },
   "cozy-permissions": {
+    "CozyInstance": {
+      "description": "Get the current locale."
+    },
     "File": {
       "description": "Acess music from files."
+    },
+    "Folder": {
+      "description": "Create the cozic folder to import old track."
     },
     "Track": {
       "description": "Hear your track in your cozy."
