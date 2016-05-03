@@ -17,7 +17,6 @@ const Player = Mn.LayoutView.extend({
         volumeBar: '#volume-bar',
         playButton: '#play',
         trackname: '#trackname',
-        shuffle: '#shuffle',
         repeat: '#repeat',
         speaker: '#speaker'
     },
@@ -28,7 +27,6 @@ const Player = Mn.LayoutView.extend({
         'click #next': 'next',
         'mousedown @ui.progressBar': 'skip',
         'mousedown @ui.volumeBar': 'changeVol',
-        'click @ui.shuffle': 'toggleShuffle',
         'click @ui.repeat': 'toggleRepeat',
         'click @ui.speaker': 'toggleVolume'
     },
@@ -179,13 +177,6 @@ const Player = Mn.LayoutView.extend({
             'xlink:href',
             require('../assets/icons/pause-lg.svg')
         );
-    },
-
-    toggleShuffle() {
-        application.channel.trigger('upnext:addCurrentPlaylist');
-        let shuffle = application.appState.get('shuffle');
-        application.appState.set('shuffle', !shuffle);
-        this.ui.shuffle.toggleClass('active', !shuffle);
     },
 
     toggleRepeat() {

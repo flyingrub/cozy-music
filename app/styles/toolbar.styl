@@ -13,6 +13,9 @@ div[role='toolbar']
         padding-left: 16px
         padding-right: 16px
 
+        > div:not(:first-child)
+            margin-top: 8px
+
         .button
             cursor: pointer
             font-family: 'Source Sans Pro'
@@ -60,9 +63,6 @@ div[role='toolbar']
                 width: 100%
                 height: 100%
                 color: $text-light
-
-        #search
-            margin-top: 8px
 
         .input
             font-family: 'Source Sans Pro'
