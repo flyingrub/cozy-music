@@ -16,11 +16,6 @@ const Tracks = Backbone.Collection.extend({
                 'upnext:reset': this.resetUpNext,
                 'upnext:addCurrentPlaylist': this.addCurrentPlaylistToUpNext
             });
-            this.listenTo(
-                application.appState,
-                'change:shuffle',
-                this.shuffleUpNext
-            );
         }
 
         // Remove a track from all it's playlist when he is destroyed
@@ -34,13 +29,6 @@ const Tracks = Backbone.Collection.extend({
             );
         }
         this.on('change:hidden', this.removeTrack, this);
-    },
-
-    // UpNext : shuffle
-    shuffleUpNext(appState, shuffle) {
-        if (shuffle) {
-            this.reset(this.shuffle(), {silent:true});
-        }
     },
 
     // UpNext : reset

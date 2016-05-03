@@ -1,4 +1,4 @@
-{
+  {
   "name": "music",
   "version": "0.4.1",
   "description": "music description",
@@ -76,6 +76,9 @@
     },
     "Playlist": {
       "description": "Manage your playlist."
+    },
+    "Binary": {
+      "description": "Access your binary music files to stream them."
     }
   }
 }

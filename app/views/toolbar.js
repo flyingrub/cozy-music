@@ -1,4 +1,5 @@
 import Mn from 'backbone.marionette';
+import { syncFiles } from '../libs/file';
 import scdl from '../libs/soundcloud';
 import PlaylistsView from './playlists';
 import NotificationView from './notification';
@@ -21,6 +22,7 @@ const Toolbar = Mn.LayoutView.extend({
     },
 
     events: {
+        'click #sync-files': syncFiles,
         'click @ui.importSC': 'importStream',
         'click @ui.search': 'focusInput',
         'focusout @ui.importSC': 'focusoutImportSc',
