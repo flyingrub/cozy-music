@@ -53,7 +53,7 @@
   "scripts": {
     "build": "env OPTIMIZE=true webpack",
     "clean": "rm -rf public",
-    "copy:manifest": "cp package.json public/",
+    "copy:manifest": "cp package.json README.md LICENSE public/",
     "tx": "tx pull --all || true",
     "postbuild": "npm run copy:manifest",
     "prebuild": "npm-run-all clean tx",
