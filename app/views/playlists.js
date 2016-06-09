@@ -63,11 +63,11 @@ const Playlists = Mn.CompositeView.extend({
         }
     },
 
+    // When the current playlist is deleted, display the main view
     deletedPlaylist(playlist) {
         let currentPlaylist = application.appState.get('currentPlaylist');
         if (currentPlaylist == playlist) {
-            application.appState.set('currentPlaylist', application.allTracks);
-            $("#all-song").addClass('selected');
+            application.router.navigate('tracks', { trigger: true });
         }
     },
 
@@ -75,18 +75,6 @@ const Playlists = Mn.CompositeView.extend({
         let currentPlaylist = application.appState.get('currentPlaylist');
         return {
             type: currentPlaylist.get('tracks').type
-        }
-    },
-
-    changePlaylist(e) {
-        if ($(e.currentTarget).attr('id') == "up-next") {
-            application.appState.set('currentPlaylist', application.upNext);
-        } else if ($(e.currentTarget).attr('id') == "all-song") {
-            application.appState.set('currentPlaylist', application.allTracks);
-        } else {
-            let id = e.currentTarget.dataset.id;
-            let playlist = application.allPlaylists.get(id);
-            application.appState.set('currentPlaylist', playlist);
         }
     }
 });

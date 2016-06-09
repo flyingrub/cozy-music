@@ -24,5 +24,6 @@ function init(err, instances) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
+    // Cozy instance contains info about the cozy, e.g the language preference
     cozysdk.run('cozyinstance', 'all', {}, init);
 });

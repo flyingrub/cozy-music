@@ -12,6 +12,7 @@ let PlaylistsRouter = SubRoute.extend({
     },
 
     show(id) {
+        // When all playlists has been loaded, show the playlist
         application.loadPlaylist.then((val) => {
             let playlist = application.allPlaylists.get(id);
             if (playlist) {

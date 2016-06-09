@@ -28,6 +28,7 @@ let Router = Backbone.Router.extend({
         application.appState.set('currentPlaylist', application.upNext);
     },
 
+    // Search in the title, album and artist. Case unsensitive.
     search(pattern) {
         let models = application.allTracks.get('tracks').filter((item) => {
             let metas = _.defaults({}, item.get('metas'), {
