@@ -80,7 +80,11 @@ function convertOneTrack(track, callback) {
 // Get track info
 function getTrack(track, callback) {
     cozysdk.find('Track', track._id, (err, newTrack) => {
-        getBinary(newTrack, callback);
+        if (newTrack.binary) {
+            getBinary(newTrack, callback);
+        } else {
+            callback();
+        }
     });
 }
 
