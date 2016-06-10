@@ -42,6 +42,8 @@ const Player = Mn.LayoutView.extend({
                     this.load(currentTrack);
                 }
         });
+
+        // Allow keyboard event to manage the player
         $(document).keyup((e) => {
             e.preventDefault();
             let audio = this.ui.player.get(0);
@@ -71,6 +73,8 @@ const Player = Mn.LayoutView.extend({
                     break;
             }
         });
+
+        // Allow the seek through the volume and track progress
         $(document).mousemove((e) => {
             if (this.volumeDown) {
                 this.changeVol(e);

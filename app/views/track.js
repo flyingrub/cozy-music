@@ -22,12 +22,12 @@ const TrackView = Mn.LayoutView.extend({
         'click': 'play',
         'click @ui.menu': 'toggleMenu',
         'click .add-to-upnext':'addToUpNext',
-        'mouseenter .add-to-playlist':'showPlaylist',
-        'mouseleave .add-to-playlist':'hidePlaylist',
+        'mouseenter .add-to-playlist':'showPlaylistPopup',
+        'mouseleave .add-to-playlist':'hidePlaylistPopup',
         'click .album-to-upnext':'albumToUpNext',
         'click .edit-details':'editDetails',
         'click .delete':'delete',
-        'click .delete-from-upnext': 'deleteFromUpNext',
+        'click .delete-from-upnext': 'removeFromUpNext',
         'click .remove-from-playlist': 'removeFromPlaylist',
         'mouseleave #popup-menu': 'hidePopupMenu',
     },
@@ -66,14 +66,15 @@ const TrackView = Mn.LayoutView.extend({
         this.ui.menu.removeClass('active');
     },
 
-    showPlaylist(e) {
+    showPlaylistPopup(e) {
         application.channel.trigger('playlistPopup:show', this.model);
     },
 
-    hidePlaylist(e)  {
+    hidePlaylistPopup(e)  {
         application.channel.trigger('playlistPopup:hide', this.model);
     },
 
+    // Add this model to upNext
     addToUpNext(e) {
         e.stopPropagation();
         application.upNext.addTrack(this.model);
@@ -85,7 +86,8 @@ const TrackView = Mn.LayoutView.extend({
         application.channel.request('notification', notification);
     },
 
-    deleteFromUpNext(e) {
+    // Remove this model from up next
+    removeFromUpNext(e) {
         e.stopPropagation();
         if (this.model == application.appState.get('currentTrack')) {
             application.channel.trigger('player:next');
@@ -93,6 +95,7 @@ const TrackView = Mn.LayoutView.extend({
         application.upNext.removeTrack(this.model);
     },
 
+    // Remove the model from the current playlist
     removeFromPlaylist(e) {
         e.stopPropagation();
         application.appState.get('currentPlaylist').removeTrack(this.model);
@@ -128,7 +131,8 @@ const TrackView = Mn.LayoutView.extend({
         });
     },
 
-    togglePlayingState () {
+    // Add the playling class if the current track is this model
+    togglePlayingState() {
         let isPlayed = application.appState.get('currentTrack') === this.model;
         this.$el.toggleClass('playing', isPlayed);
     },
