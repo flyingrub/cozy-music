@@ -29,6 +29,7 @@ const Header = Mn.ItemView.extend({
         );
     },
 
+    // Unfocus on Enter
     keypressPlaylistTitle(e) {
         e.stopPropagation();
         if (e.key == 'Enter') {
@@ -37,6 +38,7 @@ const Header = Mn.ItemView.extend({
         }
     },
 
+    // Save the new playlist name on unfocus
     savePlaylistTitle(e) {
         if (this.ui.title.html() == '') {
             setTimeout(() => { this.ui.title.focus() }, 0);
@@ -67,11 +69,13 @@ const Header = Mn.ItemView.extend({
         this.render();
     },
 
+    // Delete a playlist
     deletePlaylist() {
         let currentPlaylist = this.model.get('currentPlaylist');
         application.channel.trigger('delete:playlist', currentPlaylist);
     },
 
+    // Clear the upNext playlist
     resetUpNext() {
         application.channel.trigger('upnext:reset');
     },

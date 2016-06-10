@@ -22,6 +22,7 @@ const Content = Mn.LayoutView.extend({
         this.switchPlaylist(null, this.model.get('currentPlaylist'));
     },
 
+    // only the router change the current playlist
     switchPlaylist (appState, currentPlaylist) {
         this.showChildView('tracks', new TracksView({
             collection: currentPlaylist.get('tracks')

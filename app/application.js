@@ -61,7 +61,7 @@ let Application = Mn.Application.extend({
 
         // prevent the scroll with keyboard
         document.addEventListener('keydown', (e) => {
-            let isScrollKey = [32, 33, 34, 37, 38, 39, 40].indexOf(e.which) != -1;
+            let isScrollKey =  _.includes([32, 33, 34, 37, 38, 39, 40], e.which);
             if (isScrollKey && e.target == document.body) {
                 e.preventDefault();
             }
