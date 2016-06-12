@@ -1,4 +1,4 @@
-#player-container
+.player
     box-sizing: border-box
     position:absolute
     bottom:0
@@ -7,15 +7,7 @@
     width: 100%
     background-color: $background-dark
     border: solid 1px $border-color
-
-    audio
-        position: absolute
-        top: 20px
-        right: 0px
-
-    .player
-        display: flex
-        width: 100%
+    display: flex
 
     .play-controls
         padding-left 16px
@@ -87,7 +79,7 @@
                 border-radius: 2px
                 background-color: $blue
 
-    .controls
+    .controls-extended
         width: 280px
 
         #volume-bar

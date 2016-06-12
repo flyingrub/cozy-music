@@ -33,7 +33,6 @@ const Tracks = Backbone.Collection.extend({
 
     // UpNext : reset
     resetUpNext() {
-        application.appState.set('currentTrack', undefined);
         application.upNext.get('tracks').reset();
     },
 

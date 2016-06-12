@@ -1,0 +1,30 @@
+<% if (false) { %>
+    <img class="album" src="album"></img>
+<% } else { %>
+    <button class="album">
+        <svg>
+            <use xlink:href="<%= require('../../assets/icons/music-lg.svg') %>"/>
+        </svg>
+    </button>
+<% }%>
+
+<button id="prev">
+    <svg>
+        <use xlink:href="<%= require('../../assets/icons/prev-lg.svg') %>"/>
+    </svg>
+</button>
+<button id="play">
+    <svg>
+        <% if (isPlaying) { %>
+            <use xlink:href="<%= require('../../assets/icons/pause-lg.svg') %>"/>
+        <% } else { %>
+            <use xlink:href="<%= require('../../assets/icons/play-lg.svg') %>"/>
+        <% }%>
+    </svg>
+</button>
+<button id="next">
+    <svg>
+        <use xlink:href="<%= require('../../assets/icons/next-lg.svg') %>"/>
+    </svg>
+</button>
+
