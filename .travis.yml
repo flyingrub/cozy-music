@@ -2,8 +2,6 @@ sudo: required
 language: node_js
 node_js:
 - 4
-python:
-- 2.7.9
 addons:
   apt:
     sources:
@@ -18,7 +16,7 @@ before_script:
 - cd transifex-client
 - git checkout 0.12.1
 - sudo python setup.py install
-- cd ..
+- cd $TRAVIS_BUILD_DIR
 - install -m0644 .transifexrc.tpl ~/.transifexrc
 - echo "password = $TX_PASSWD" >> ~/.transifexrc
 script:
@@ -26,12 +24,12 @@ script:
 - npm run test
 before_deploy:
 - npm run deploy
-- cd public
+- cd $TRAVIS_BUILD_DIR/public
 deploy:
   provider: npm
   email: frank@cozycloud.cc
   api_key:
-    secure: Ci6JiHjsEQPUHLKVuWvfMLvk/Obs3vqMMig91loV/JPgrVInX6s4YSmeKnxMjidAIWjwnqEVJrNUn9v2kvxTUI2/ifAapnq9XtxNV8rhn8ZLku3bUvR/8rRvsIgDXvl4ziNT7l0zN44WzoZNwhNtON3F5OIwiBAc3BQjnYBIbao8wNb4v3KXyuS8r/ABcVx5smAnoGbpCj8zTkCzfj0liPwWNwQy1anu6r8BWNFCaviCwLT1JbfsxFliFMBdn5N9fETToN+EMmai7oZEFgf8lPXILl5aQl75+Xm7LloqD+U2S+cpbQyze34WFitW/t9FD5ZRD4vlLps7rlAIju3ErbORzHZRLP3saf1fH7lp0Ax1jMjpcJV20PoF3z7NoyDaeg3bkKagG8Qmf1wbCKrBKjKxPcolVizA+vmyc15AjQTWp4Dcs48OhQIc9Fcs7YjZ97QYYTziAvG93fgqh7XSs4JFLLtXTRG1WkCKaYBOgHAaTOBFHiRSr9D+zdU6VwE++VJuI2T2qXTAcTyWZwygJotKyfHCXIjNirtJ9Ke8t325rSqSCSTGnN59nHXDsLA2qEq2O4unfosKY6TYvBD/RQaLtO2tyeDWu2TTCJ95MqJPjYvOBgQDRG7meOp1gX2SDwx/GAtekun6F6kxBLdf8tyqKnQhu1UIgBvziTlN9a8=
+    secure: lzEXwYvkPrt5W7+G1F4K/5zG7HHSeSW+CZzWQLzUWjla+9Cobg/dD3oSdgfFL2oqUFxDIJ5OnGZgHcN85flcBZWHAIgveYrNyksTAXkyXZpEtTqcIpXF3+UcrbQbHKFYi0A8Q3TSEfy7EsVy9lvfC5JRyZMt9CGT+ZlL8f+1q1g3RGH8EnVLMypK8sGSDQE16nNhKKG/xOHdVHosVTPTRjnK1LvJik13uQ8h1cXe5wzvEEnLmS6YsAyYZSHz7cXNElmPVScgV618ckw8dUoZ3GZMEmRwftOF146vxnwKtG8w9s18BFWE+TJRKtAhdANf6pz33eXx3SSFpYja+MbAlwF+m57lrSH4fs7Kajetfg02AtGfrmjvnU23o3friHLJt1JdOr3rZx6YEoK3p7hXsGp97TSwdmyhGCHa+LW9uh27U7bz9WdLFLOKcuy6h2v2a98yH58PB/TX8f8GeL7ooxxllQj5evRg5Q92zdCl7uS25vHtWm+cGS9Hs5Jhz1R95HFWbUhHrjfrBWGZkvEiQUyOqKjR1T/o9a8qNDiKVaHShEBsulIxSGf2Iq2V7Jmjj1uzDwolMH+YQSIWu4BtGWM0DKo+rJg4b4S6q1AGNOWxJcfYFLGNUSTL47Xurb9o8/nXlUl8pD78dPoELsM0CHq0jFxZuq7cuvaWYKFAwpE=
   skip_cleanup: true
   on:
     branch: master
