@@ -22,7 +22,7 @@ cache:
     - node_modules
 
 before_script:
-  - sudo pip install transifex-client
+  - sudo pip install transifex-client pyopenssl
 
 script:
   - echo $TX_PASSWORD >> .transifexrc_on_travis
@@ -38,6 +38,7 @@ deploy:
   email: frank@cozycloud.cc
   api_key:
     secure: Ci6JiHjsEQPUHLKVuWvfMLvk/Obs3vqMMig91loV/JPgrVInX6s4YSmeKnxMjidAIWjwnqEVJrNUn9v2kvxTUI2/ifAapnq9XtxNV8rhn8ZLku3bUvR/8rRvsIgDXvl4ziNT7l0zN44WzoZNwhNtON3F5OIwiBAc3BQjnYBIbao8wNb4v3KXyuS8r/ABcVx5smAnoGbpCj8zTkCzfj0liPwWNwQy1anu6r8BWNFCaviCwLT1JbfsxFliFMBdn5N9fETToN+EMmai7oZEFgf8lPXILl5aQl75+Xm7LloqD+U2S+cpbQyze34WFitW/t9FD5ZRD4vlLps7rlAIju3ErbORzHZRLP3saf1fH7lp0Ax1jMjpcJV20PoF3z7NoyDaeg3bkKagG8Qmf1wbCKrBKjKxPcolVizA+vmyc15AjQTWp4Dcs48OhQIc9Fcs7YjZ97QYYTziAvG93fgqh7XSs4JFLLtXTRG1WkCKaYBOgHAaTOBFHiRSr9D+zdU6VwE++VJuI2T2qXTAcTyWZwygJotKyfHCXIjNirtJ9Ke8t325rSqSCSTGnN59nHXDsLA2qEq2O4unfosKY6TYvBD/RQaLtO2tyeDWu2TTCJ95MqJPjYvOBgQDRG7meOp1gX2SDwx/GAtekun6F6kxBLdf8tyqKnQhu1UIgBvziTlN9a8=
+  skip_cleanup: true
   on:
     branch: master
     tags: true
