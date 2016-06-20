@@ -1,38 +1,32 @@
----
-
 sudo: required
-
 language: node_js
-
 node_js:
-  - 4
-
+- 4
 python:
-  - 3.4
-
+- 2.7.9
 addons:
   apt:
     sources:
-      - ubuntu-toolchain-r-test
+    - ubuntu-toolchain-r-test
     packages:
-      - g++-4.8
-
+    - g++-4.8
 cache:
   directories:
-    - node_modules
-
+  - node_modules
 before_script:
-  - sudo pip install transifex-client pyopenssl
-
+- git clone http://code.transifex.com/transifex-client
+- cd transifex-client
+- git checkout 0.12.1
+- sudo python setup.py install
+- cd ..
+- install -m0644 .transifexrc.tpl ~/.transifexrc
+- echo "password = $TX_PASSWD" >> ~/.transifexrc
 script:
-  - echo $TX_PASSWORD >> .transifexrc_on_travis
-  - mv .transifexrc_on_travis .transifexrc
-  - npm run build
-  - npm run test
-
+- npm run build
+- npm run test
 before_deploy:
-  - cd public
-
+- npm run deploy
+- cd public
 deploy:
   provider: npm
   email: frank@cozycloud.cc
@@ -43,8 +37,8 @@ deploy:
     branch: master
     tags: true
     repo: cozy-labs/cozy-music
-
 env:
   global:
-    - CXX=g++-4.8
-    - secure: CA0WhO3Gnx1jjQT1K9l8ULs3xU5pvdFr59kKESXTRp6xRhCGqW8n5fWSZ8YPr8NHAhq4BrwAlDtjbtsofau3bHBSIMvSwLV10mmya9LLA/3CxjBthpv8vPAf+RQH7ZLR61HQJJ+9f6oDCAW/LxhVUrYSlDsyRRVsmty3svObDEHF6o3SWK2Ls87uLdkBZuOgJanWom20MUGzERmvJWso8gJo5boSCNf/kvmXOZorpyshzl+CkhplIHE5vEv+ki2M9e3wOV4tUbLPbos9CD70VyQ09bnmimFsJOSWdbrodt0wBxIQSt59UtINudK9/pPjPFoDBZuqrHQomiJQSuLHLjdx9rtNGLscx5a/1+eZGeLuI4r2nm0zp8YJHZS3XiaJc/1d29uLCj5JxutHk8vWdTjQZKdQN3YkUdXCs3xzQpiBDG/1JpBs/20P9FfRS/lIEgkaWpz1/otZ2w9FlOZYgMPTJcMSUFGdY8YD0jvpwD+SXgFDOxBL02ExcIL4dIe8+f/XMyjXROcMJDsdD9p/DG9HZ6fIv4jkbzU9vdqDtMevXUXateIazdRXuqnjEM/4AN0iJ4j0kb5cAH5YWWbx7MwFnp7oWWnV30wy7bNIlhqeBAsXma8YEqjSjF+7PgubEzuoxiSJp/Pkt6npU4Rn62TdArH8F/XsNN05KKJSK3w=
+  - CXX=g++-4.8
+  - secure: y1xuAMtE5PR9tQ2yGYWRCh9p1aq2eDhJgIs2v4m5+IBHco1DZMzavQ6XPhryj0Y9IhkHWPvK5HOEz/J8UAIF0KL+8IFQX6eNI3PwzRIRQmXa+YvREAaSE+1PBg5gpP1YAN6khb24ksPWHXiAmdV7e+KiVospGA6Bs3SEPyJKlSebRq/Pw/RG+qljBk8FjFFs9QVC/d/6SP6EbMoZAD3ZaALtIqBOP4N9Jk/zivQmNlZDI231PY2h+XUU9QUR8EEu6Z/aT9tk+6zkfFYZR61crhrdIYS8mvmcu/Z1EPSWpNLf9Zr0EnnmB4z/DdUJx4NnmcyTQ8TZYE8mU1Tvlzm7pvOzTBd0pZkr56G8J2bGgaAadiDuf77Fb3N4yPZYqIIjsPEpE0DxCXMBVy5zJAbrc1BQJh2I+8Clk7xbuPjtxHI8vxAOm/c8m6VTIWGcMmFMtIrtYut+youE93VEvbdReDOJIgkKV3oPhynXPzumf5VVR3uf2w6fXKh3emOairV/bhR4M/V4CoLWkFGAe9+V3HMq4woMcz74o6DA2ueo9iA17bh9bg2mlQWATq+uQuuy1eXIWwe+vF28CHMYHnJ3o00hivdVASp0Q7EZjQAPkX48tC9FonUZ7Z3TK1QCkDcZB/gJGNFZLJuxwaNh1kfwfL1+EZgTLV4w0x8ZIo99ff8=
+  - secure: lGgFcnIoAqFAQaMhOJHPctFjtoeIwr215xJt8+KHF7C8k0dnreik21sGOJj8NRH5yOeseOiPr7u0xOk7hUuSfIg95YKWVPCnVaClrUrSHh3n+xhvgymcOvJeEDj9j48nkUfMqBlHSDVz9irPHTa94OOrZIdt7fqme/ifT5yUgL3yx4urXy1sz4JXud0LPhVwElUein/3i74rGVp1G5wQJWDyI7BxOzDTBYs0ELovohEOjfc9QbiVSAp2bldUeDUgA7QEvj8Y83dzMkmTQ82fR6YRO0+8iDBUq+U4zeGij3grSeoYx3KJCPAq7LdYpNd95xIJ9gvouwZARQaJzBZ8YNve3E9wWakSPbcQl+5cPEjNt5c41RwRdtKtyHIJizGzpc/3DpeslrwM8FxRlKVV5I3azkiEZ9PrNjkuB5zWYXWYInII6QEnfJc1oxx/zffYF2IDc3t01m5oxNVeurdMTiJ0dgRgXoaSnT/vsVeyFw/lHbOPvG4C8dU/pyGJXEBukGp6QY9JZ6AxbpsOY13ukwFM4ZmZxr2KjBjGGb/EcfGhKWlYOH7wKWesQ7G9r93WwsFwux66aCAPJL783C19fwwnZ27prIDfsDB1JTHf0UClj7ZPCtG7j0J8k7otzkwSeh/97oWFzLEe+l7IodZA+Sxa7JEr5dgiM+viwOXo/jc=

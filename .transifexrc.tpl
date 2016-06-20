@@ -1,5 +1,4 @@
 [https://www.transifex.com]
 hostname = https://www.transifex.com
-username = simonc
+username = m4dz
 token =
-password =
