@@ -1,6 +1,6 @@
 {
-  "name": "music",
-  "version": "0.4.1",
+  "name": "cozy-music",
+  "version": "0.4.5",
   "description": "music description",
   "license": "AGPL-3.0",
   "cozy-type": "static",
@@ -39,6 +39,7 @@
     "css-mqpacker": "4.0.0",
     "extract-text-webpack-plugin": "1.0.1",
     "file-loader": "0.8.5",
+    "git-directory-deploy": "1.5.0",
     "html-webpack-plugin": "2.10.0",
     "lodash": "4.6.1",
     "npm-run-all": "1.7.0",
@@ -53,12 +54,13 @@
   "scripts": {
     "build": "env OPTIMIZE=true webpack",
     "clean": "rm -rf public",
-    "copy:manifest": "cp package.json public/",
+    "copy:manifest": "install -m0644 package.json README.md LICENSE public",
+    "deploy": "git-directory-deploy --directory public/ --branch build --repo=https://$GITHUB_TOKEN@github.com/cozy-labs/cozy-music.git",
     "tx": "tx pull --all || true",
     "postbuild": "npm run copy:manifest",
     "prebuild": "npm-run-all clean tx",
     "prewatch": "npm run clean",
-    "publish": "git subtree push --prefix public origin build",
+    "test": "true",
     "watch": "webpack --display-modules --display-chunks --watch"
   },
   "cozy-permissions": {
@@ -76,6 +78,9 @@
     },
     "Playlist": {
       "description": "Manage your playlist."
+    },
+    "Binary": {
+      "description": "Access your binary music files to stream them."
     }
   }
 }
