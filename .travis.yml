@@ -22,19 +22,8 @@ before_script:
 script:
 - npm run build
 - npm run test
-before_deploy:
-- npm run deploy
-- cd $TRAVIS_BUILD_DIR/public
-deploy:
-  provider: npm
-  email: frank@cozycloud.cc
-  api_key:
-    secure: lzEXwYvkPrt5W7+G1F4K/5zG7HHSeSW+CZzWQLzUWjla+9Cobg/dD3oSdgfFL2oqUFxDIJ5OnGZgHcN85flcBZWHAIgveYrNyksTAXkyXZpEtTqcIpXF3+UcrbQbHKFYi0A8Q3TSEfy7EsVy9lvfC5JRyZMt9CGT+ZlL8f+1q1g3RGH8EnVLMypK8sGSDQE16nNhKKG/xOHdVHosVTPTRjnK1LvJik13uQ8h1cXe5wzvEEnLmS6YsAyYZSHz7cXNElmPVScgV618ckw8dUoZ3GZMEmRwftOF146vxnwKtG8w9s18BFWE+TJRKtAhdANf6pz33eXx3SSFpYja+MbAlwF+m57lrSH4fs7Kajetfg02AtGfrmjvnU23o3friHLJt1JdOr3rZx6YEoK3p7hXsGp97TSwdmyhGCHa+LW9uh27U7bz9WdLFLOKcuy6h2v2a98yH58PB/TX8f8GeL7ooxxllQj5evRg5Q92zdCl7uS25vHtWm+cGS9Hs5Jhz1R95HFWbUhHrjfrBWGZkvEiQUyOqKjR1T/o9a8qNDiKVaHShEBsulIxSGf2Iq2V7Jmjj1uzDwolMH+YQSIWu4BtGWM0DKo+rJg4b4S6q1AGNOWxJcfYFLGNUSTL47Xurb9o8/nXlUl8pD78dPoELsM0CHq0jFxZuq7cuvaWYKFAwpE=
-  skip_cleanup: true
-  on:
-    branch: master
-    tags: true
-    repo: cozy-labs/cozy-music
+after_success:
+- test $TRAVIS_BRANCH = "master" && npm run deploy
 env:
   global:
   - CXX=g++-4.8
