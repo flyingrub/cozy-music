@@ -104,7 +104,8 @@ const Player = Mn.ItemView.extend({
 
     prev() {
         let upNext = application.upNext.get('tracks');
-        let currentTrack = application.appState.get('currentTrack');
+        let currentTrackID = application.appState.get('currentTrack').get('_id');
+        let currentTrack = upNext.get(currentTrackID);
         let index = upNext.indexOf(currentTrack);
         let prev = upNext.at(index - 1)
         if (prev) {
@@ -115,7 +116,8 @@ const Player = Mn.ItemView.extend({
     next() {
         let repeat = application.appState.get('repeat');
         let upNext = application.upNext.get('tracks');
-        let currentTrack = application.appState.get('currentTrack');
+        let currentTrackID = application.appState.get('currentTrack').get('_id');
+        let currentTrack = upNext.get(currentTrackID);
         let index = upNext.indexOf(currentTrack) + 1;
         let next = upNext.at(index)
         if (repeat == 'track') {
@@ -128,7 +130,7 @@ const Player = Mn.ItemView.extend({
             }
             application.appState.set('currentTrack', upNext.at(0));
         } else {
-            application.appState.set('currentTrack', undefined);
+            this.reset();
         }
     },
 

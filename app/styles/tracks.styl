@@ -1,4 +1,15 @@
 .tracks
+    &:not(.upNext)
+        .delete-from-upnext
+            display: none
+    &.upNext
+        .add-to-upnext
+            display: none
+    &:not(.playlist)
+        .remove-from-playlist
+            display: none
+
+
     div[role='rowheader']
         width: 100%
         color: $text-light
@@ -39,6 +50,9 @@
         width: 62px
 
     ul
+        display: flex
+        flex-direction: column
+
         .playing
             color: $red
             .song-column-cell

@@ -11,7 +11,7 @@ import { syncFiles } from './libs/file';
 
 
 require('./styles/app.styl');
-
+const TRACK_LIMIT = 300;
 
 let Application = Mn.Application.extend({
 
@@ -29,7 +29,14 @@ let Application = Mn.Application.extend({
             title: 'All Songs',
             tracks: new Tracks([], { type: 'all' })
         });
-        this.allTracks.get('tracks').fetch();
+        let loadTrack = new Promise((loadTrackResolve, reject) => {
+            let downloadPromise = this.allTracks.get('tracks').fetch({
+                data: { limit: TRACK_LIMIT }, remove: false
+            });
+            this.fetchTracks(downloadPromise, loadTrackResolve);
+        });
+        loadTrack.then(()=> { syncFiles(); });
+
 
         this.upNext = new Playlist({
             title: 'Up Next',
@@ -47,8 +54,22 @@ let Application = Mn.Application.extend({
         this.appState.set('currentPlaylist', this.allTracks);
 
         this.allPlaylists = new Playlists();
-
         this.loadPlaylist = this.allPlaylists.fetch(); // Promise
+    },
+
+    // Get all Tracks by TRACK_LIMIT
+    fetchTracks(downloadPromise, loadTrackResolve) {
+        downloadPromise.then((res) => {
+            let tracks = this.allTracks.get('tracks');
+            if(res.length == TRACK_LIMIT) {
+                let downloadPromise = tracks.fetch({
+                    data: { limit: TRACK_LIMIT, skip: tracks.length }, remove: false
+                });
+                this.fetchTracks(downloadPromise, loadTrackResolve);
+            } else {
+                loadTrackResolve();
+            }
+        });
     },
 
     onStart () {
@@ -57,7 +78,6 @@ let Application = Mn.Application.extend({
         }
         this.appLayout = new AppLayout();
         this.appLayout.render();
-        syncFiles();
 
         // prevent the scroll with keyboard
         document.addEventListener('keydown', (e) => {

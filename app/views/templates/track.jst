@@ -8,19 +8,16 @@
 <div class="artist-column-cell" role="gridcell"><%- artist %></div>
 <div class="album-column-cell" role="gridcell"><%- album %>
     <div class="actions">
-        <% if (type != 'upNext') { %>
         <button class="add-to-upnext" title="<%= t('add to upnext') %>">
             <svg>
                 <use xlink:href="<%= require('../../assets/icons/add-to-playlist-sm.svg') %>"/>
             </svg>
         </button>
-        <% } else { %>
         <button class="delete-from-upnext" title="<%= t('remove from upnext') %>">
             <svg>
                 <use xlink:href="<%= require('../../assets/icons/cross-sm.svg') %>"/>
             </svg>
         </button>
-        <% } %>
         <button class="menu">
             <svg>
                 <use xlink:href="<%= require('../../assets/icons/more-sm.svg') %>"/>
@@ -41,14 +38,12 @@
             </svg>
             <div class="playlist-popup-container">
         </li>
-        <% if (type == 'playlist') { %>
         <li class="remove-from-playlist">
             <svg>
                 <use xlink:href="<%= require('../../assets/icons/cross-sm.svg') %>"/>
             </svg>
             <%= t('remove from playlist') %>
         </li>
-        <% } %>
         <li class="album-to-upnext">
             <svg>
                 <use xlink:href="<%= require('../../assets/icons/add-to-playlist-sm.svg') %>"/>

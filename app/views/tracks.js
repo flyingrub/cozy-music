@@ -11,16 +11,32 @@ const TracksView = Mn.CompositeView.extend({
 
     childView: TrackView,
 
-    // Override
-    remove() {
-        this._removeElement();
-        try {
-            this.stopListening(); // Weird Error
-        } catch (e) {
-            //console.log('views/tracks.js', e);
-        }
-        return this;
+    onRender() {
+        let style = document.createElement('style');
+        style.appendChild(document.createTextNode(''));
+        document.head.appendChild(style);
+        this.sheet = style.sheet;
+
+        this.listenTo(application.appState, 'change:currentPlaylist',
+            this.displayTrack, this);
     },
+
+    displayTrack(appState, currentPlaylist) {
+        for (let i=0; i < this.sheet.cssRules.length; i++) {
+            this.sheet.deleteRule(i);
+        }
+        let type = currentPlaylist.get('tracks').type;
+        if (type == 'playlist') {
+            let id = currentPlaylist.get('_id')
+            this.sheet.insertRule(`
+                #track-list > li:not(.playlist-${id}) { display: none }
+            `, 0);
+        } else if (type != 'all') {
+            this.sheet.insertRule(`
+                #track-list > li:not(.playlist-${type}) { display: none }
+            `, 0);
+        }
+    }
 
 });
 

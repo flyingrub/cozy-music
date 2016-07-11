@@ -41,7 +41,7 @@ let Router = Backbone.Router.extend({
                 || search.test(metas.artist);
         });
         application.search.set('title', 'Results for "' + pattern + '"');
-        application.search.get('tracks').reset(models);
+        application.search.resetTrack(models);
         application.appState.set('currentPlaylist', application.search);
     }
 });

@@ -10,7 +10,12 @@ const Tracks = Backbone.Collection.extend({
     initialize(models, options) {
         this.type = options.type;
         if (this.type == 'upNext') {
-            this.listenTo(application, 'start', this.addCurrentTrackToUpNext);
+            this.listenTo(application.appState,
+                'change:currentTrack',
+                function(appState, currentTrack) {
+                    application.upNext.addTrack(currentTrack);
+                }
+            );
             this.listenTo(
                 application.channel,{
                 'upnext:reset': this.resetUpNext,
@@ -33,55 +38,42 @@ const Tracks = Backbone.Collection.extend({
 
     // UpNext : reset
     resetUpNext() {
-        application.upNext.get('tracks').reset();
+        application.upNext.resetTrack();
     },
 
     // UpNext : Add current playlist to upNext if no track in UpNext
     addCurrentPlaylistToUpNext() {
         let currentPlaylist = application.appState.get('currentPlaylist');
-        let tracks = currentPlaylist.get('tracks');
-        if (tracks == this) {
-            tracks = application.allTracks.get('tracks');
-        }
-        if (application.upNext.get('tracks').length == 0) {
-            tracks.each(track => {
-                application.upNext.get('tracks').add(track);
+        let currentTracks = currentPlaylist.get('tracks');
+        if (this.length == 0) {
+            currentTracks.each(track => {
+                application.upNext.addTrack(track);
             });
         }
-    },
-
-    // UpNext : add the current track to up next if not alreay in it
-    addCurrentTrackToUpNext() {
-        this.listenTo(
-            application.appState,
-            'change:currentTrack',
-            function(appState, currentTrack) {
-                this.push(currentTrack);
-            }
-        );
     },
 
     removeTrack(track) {
         this.remove(track);
     },
 
-    comparator(model) {
-        return model.get('metas').title;
-    },
-
     sync(method, model, options) {
         if (method == 'read' && this.type == "all") {
-            cozysdk.run('Track', 'playable', {}, (err, res) => {
-                if (res) {
-                    if (options && options.success) {
-                        options.success(res);
+            let promise = new Promise((resolve, reject) => {
+                cozysdk.run('Track', 'playable', options.data, (err, res) => {
+                    if (res) {
+                        if (options && options.success) {
+                            options.success(res);
+                            resolve(res);
+                        }
+                    } else {
+                        if (options && options.error) {
+                            options.error(err);
+                            reject(err);
+                        }
                     }
-                } else {
-                    if (options && options.error) {
-                        options.error(err);
-                    }
-                }
+                });
             });
+            return promise;
         }
     },
 
@@ -118,7 +110,7 @@ cozysdk.defineRequest('Track', 'oldDoctype', (doc) => {
 
 cozysdk.defineRequest('Track', 'playable', (doc) => {
         if (!doc.hidden && doc.metas) {
-            emit(doc._id, doc);
+            emit(doc.metas.title, doc);
         }
     }, (error, response) => {
 });

@@ -1,6 +1,7 @@
 import Backbone from 'backbone';
 import cozysdk from 'cozysdk-client';
 import Tracks from '../collections/tracks';
+import application from '../application';
 
 
 const Playlist = Backbone.Model.extend({
@@ -60,6 +61,7 @@ const Playlist = Backbone.Model.extend({
     addTrack(track) {
         let tracks = this.get('tracks');
         tracks.push(track);
+        application.channel.trigger('track:playlistChanged', track);
         if (tracks.type == 'playlist') this.save();
     },
 
@@ -67,7 +69,19 @@ const Playlist = Backbone.Model.extend({
     removeTrack(track) {
         let tracks = this.get('tracks');
         tracks.remove(track);
+        application.channel.trigger('track:playlistChanged', track);
         if (tracks.type == 'playlist') this.save();
+    },
+
+    // Used to resetUpNext and set search track
+    resetTrack(tracks) {
+        let oldTrack = _.clone(this.get('tracks'));
+        this.get('tracks').reset(tracks);
+
+        oldTrack.add(tracks);
+        oldTrack.each((track) => {
+            application.channel.trigger('track:playlistChanged', track);
+        });
     },
 
     parse(attrs, options) {

@@ -38,8 +38,16 @@ const TrackView = Mn.LayoutView.extend({
 
     initialize () {
         this.listenTo(application.appState, {
-            'change:currentTrack': this.togglePlayingState
-        })
+            'change:currentTrack': this.togglePlayingState,
+            'change:currentPlaylist': this.setOrder,
+        });
+
+        // if the current track is added or removed from a playlist, run setPlaylist()
+        this.listenTo(application.channel,'track:playlistChanged', (track) => {
+            if (track && track.get('_id') == this.model.get('_id')) {
+                this.setClass();
+            }
+        }, this);
     },
 
     onRender() {
@@ -47,6 +55,7 @@ const TrackView = Mn.LayoutView.extend({
             model: this.model,
             collection: application.allPlaylists
         }));
+        this.setClass();
         this.togglePlayingState();
     },
 
@@ -118,6 +127,39 @@ const TrackView = Mn.LayoutView.extend({
         e.stopPropagation();
     },
 
+    setClass() {
+        this.className = ''
+        this.order = [];
+
+        // Check if track is in upNext
+        let tracks = application.upNext.get('tracks');
+        let track = tracks.findWhere({ _id: this.model.get('_id') });
+        if (track) {
+            this.className += ' playlist-upNext';
+            this.order.push({ id: 'upNext', order: tracks.indexOf(track) });
+        }
+
+        // Check if track is in search
+        tracks = application.search.get('tracks');
+        track = tracks.findWhere({ _id: this.model.get('_id') });
+        if (track) {
+            this.className += ' playlist-search';
+        }
+
+        // Check if track is in a playlist
+        let playlists = application.allPlaylists;
+        playlists.each((playlist) => {
+            let tracks = playlist.get('tracks');
+            let track = tracks.findWhere({ _id: this.model.get('_id') });
+            if (track) {
+                this.className += ' playlist-' + playlist.get('_id');
+                this.order.push({ id: playlist.get('_id'), order: tracks.indexOf(track) });
+            }
+        });
+        this.$el.get(0).className = this.className;
+        this.setOrder();
+    },
+
     serializeData() {
         let metas = this.model.get('metas');
         let currentPlaylist = application.appState.get('currentPlaylist');
@@ -131,9 +173,37 @@ const TrackView = Mn.LayoutView.extend({
         });
     },
 
+    setOrder() {
+        let orderTrack = '';
+        let currentPlaylist = application.appState.get('currentPlaylist');
+        if (currentPlaylist.get('tracks').type == 'upNext') {
+            if (this.$el.hasClass('playlist-upNext')) {
+                let orderObj = this.order.find((o) => {
+                    return o.id == 'upNext'
+                });
+                orderTrack = orderObj.order;
+            }
+        } else if (currentPlaylist.get('tracks').type == 'playlist') {
+            let id = currentPlaylist.get('_id')
+            if (this.$el.hasClass('playlist-' + id)) {
+                let orderObj = this.order.find((o) => {
+                    return o.id == id
+                });
+                orderTrack = orderObj.order;
+            }
+        }
+        this.$el.get(0).style.order = orderTrack;
+    },
+
     // Add the playling class if the current track is this model
     togglePlayingState() {
-        let isPlayed = application.appState.get('currentTrack') === this.model;
+        let isPlayed;
+        let currentTrack = application.appState.get('currentTrack');
+        if (!currentTrack) {
+            isPlayed = false;
+        } else {
+            isPlayed = currentTrack.get('_id') == this.model.get('_id');
+        }
         this.$el.toggleClass('playing', isPlayed);
     },
 
