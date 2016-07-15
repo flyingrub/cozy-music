@@ -51,7 +51,12 @@ const PopupPlaylists = Mn.CompositeView.extend({
         e.stopPropagation();
         let id = e.currentTarget.dataset.id;
         let playlist = application.allPlaylists.get(id);
-        playlist.addTrack(this.model);
+
+        let tracks = application.selected.get('tracks');
+        tracks.each((t) => {
+            playlist.addTrack(t);
+        });
+
         let notification = {
             status: 'ok',
             message: t('added to playlist',
@@ -73,17 +78,23 @@ const PopupPlaylists = Mn.CompositeView.extend({
         let title = this.ui.playlistText.val();
         if(e.keyCode == 13) {
             let newPlaylist = new Playlist({ title: title });
-            newPlaylist.addTrack(this.model);
-            application.allPlaylists.add(newPlaylist);
-            this.ui.playlistText.val('');
-            let notification = {
-                status: 'ok',
-                message: t('added to playlist',
-                            {
-                                playlist_name: newPlaylist.get('title')
-                            })
-            }
-            application.channel.request('notification', notification);
+            application.allPlaylists.create(newPlaylist, {success: () => {
+                let tracks = application.selected.get('tracks');
+                tracks.each((t) => {
+                    newPlaylist.addTrack(t);
+                });
+
+                this.ui.playlistText.val('');
+                let notification = {
+                    status: 'ok',
+                    message: t('added to playlist',
+                                {
+                                    playlist_name: newPlaylist.get('title')
+                                })
+                }
+                application.channel.request('notification', notification);
+            }});
+
         }
     },
 

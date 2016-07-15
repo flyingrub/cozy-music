@@ -10,6 +10,7 @@ const TrackView = Mn.LayoutView.extend({
     tagName: 'li',
 
     ui: {
+        'play': '.play',
         'menu': '.menu',
         'popupMenu': '#popup-menu',
     },
@@ -19,7 +20,9 @@ const TrackView = Mn.LayoutView.extend({
     },
 
     events: {
-        'click': 'play',
+        'dblclick': 'play',
+        'mousedown': 'select',
+        'click @ui.play': 'play',
         'click @ui.menu': 'toggleMenu',
         'click .add-to-upnext':'addToUpNext',
         'mouseenter .add-to-playlist':'showPlaylistPopup',
@@ -56,10 +59,54 @@ const TrackView = Mn.LayoutView.extend({
             collection: application.allPlaylists
         }));
         this.setClass();
-        this.togglePlayingState();
+    },
+
+    select(e) {
+        e.preventDefault();
+        let selectedTracks = application.selected.get('tracks');
+
+        // Prevent resetting the selected playlist when clicking on menu
+        if (e.target.parentElement.parentElement.id != 'track-list') {
+            // if this.model is not selected, select only it, else prevent reset
+            if (!selectedTracks.get(this.model.get('_id'))) {
+                application.selected.resetTrack(this.model);
+            } else {
+                return;
+            }
+        }
+
+        if (selectedTracks.length == 0) {
+            application.selected.addTrack(this.model);
+        } else if (selectedTracks.length != 0 && e.ctrlKey) {
+            application.selected.addTrack(this.model);
+        } else if (selectedTracks.length != 0 && e.shiftKey) {
+            let currentPlaylist = application.appState.get('currentPlaylist');
+            let currentTracks = currentPlaylist.get('tracks');
+
+            let lastAddedTrack = selectedTracks.at(-1);
+            lastAddedTrack = currentTracks.get(lastAddedTrack.get('_id'));
+            let thisTrack = currentTracks.get(this.model.get('_id'));
+
+            let startIndex = currentTracks.indexOf(lastAddedTrack);
+            let endIndex = currentTracks.indexOf(thisTrack);
+
+            // Switch the two index
+            if (endIndex < startIndex){
+                let temp = startIndex;
+                startIndex = endIndex;
+                endIndex = temp;
+            }
+            for (let i = startIndex; i <= endIndex; i++){
+                application.selected.addTrack(currentTracks.at(i));
+            }
+        } else if (selectedTracks.length != 0) {
+            application.selected.resetTrack(this.model);
+        }
+
     },
 
     play(e) {
+        e.preventDefault();
         application.channel.trigger('upnext:addCurrentPlaylist');
         application.appState.set('currentTrack', this.model);
     },
@@ -86,7 +133,10 @@ const TrackView = Mn.LayoutView.extend({
     // Add this model to upNext
     addToUpNext(e) {
         e.stopPropagation();
-        application.upNext.addTrack(this.model);
+        let tracks = application.selected.get('tracks');
+        tracks.each((t) => {
+            application.upNext.addTrack(t);
+        });
 
         let notification = {
             status: 'ok',
@@ -98,16 +148,22 @@ const TrackView = Mn.LayoutView.extend({
     // Remove this model from up next
     removeFromUpNext(e) {
         e.stopPropagation();
-        if (this.model == application.appState.get('currentTrack')) {
-            application.channel.trigger('player:next');
-        }
-        application.upNext.removeTrack(this.model);
+        let tracks = application.selected.get('tracks');
+        tracks.each((t) => {
+            if (t == application.appState.get('currentTrack')) {
+                application.channel.trigger('player:next');
+            }
+            application.upNext.removeTrack(t);
+        });
     },
 
     // Remove the model from the current playlist
     removeFromPlaylist(e) {
         e.stopPropagation();
-        application.appState.get('currentPlaylist').removeTrack(this.model);
+        let tracks = application.selected.get('tracks');
+        tracks.each((t) => {
+            application.appState.get('currentPlaylist').removeTrack(t);
+        });
     },
 
     // TO DO
@@ -146,6 +202,13 @@ const TrackView = Mn.LayoutView.extend({
             this.className += ' playlist-search';
         }
 
+        // Check if track is in selected
+        tracks = application.selected.get('tracks');
+        track = tracks.findWhere({ _id: this.model.get('_id') });
+        if (track) {
+            this.className += ' selected';
+        }
+
         // Check if track is in a playlist
         let playlists = application.allPlaylists;
         playlists.each((playlist) => {
@@ -158,6 +221,7 @@ const TrackView = Mn.LayoutView.extend({
         });
         this.$el.get(0).className = this.className;
         this.setOrder();
+        this.togglePlayingState();
     },
 
     serializeData() {

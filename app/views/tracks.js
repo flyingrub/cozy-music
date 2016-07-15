@@ -19,9 +19,13 @@ const TracksView = Mn.CompositeView.extend({
 
         this.listenTo(application.appState, 'change:currentPlaylist',
             this.displayTrack, this);
+        this.displayTrack(null, application.appState.get('currentPlaylist'));
     },
 
     displayTrack(appState, currentPlaylist) {
+        // Reset selected track
+        application.selected.resetTrack();
+        // Allow to display the correct menu
         for (let i=0; i < this.sheet.cssRules.length; i++) {
             this.sheet.deleteRule(i);
         }

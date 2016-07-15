@@ -1,7 +1,8 @@
 <div class="number-column-cell" role="gridcell">
     <%- number %>
-    <svg>
-        <use xlink:href="<%= require('../../assets/icons/speaker-sm.svg') %>"/>
+    <svg class="play-icon">
+        <use class="play" xlink:href="<%= require('../../assets/icons/play-sm.svg') %>"/>
+        <use class="speaker" xlink:href="<%= require('../../assets/icons/speaker-sm.svg') %>"/>
     </svg>
 </div>
 <div class="song-column-cell" role="gridcell"><%- title %></div>

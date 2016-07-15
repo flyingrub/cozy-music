@@ -48,6 +48,11 @@ let Application = Mn.Application.extend({
             tracks: new Tracks([], { type: 'search' })
         });
 
+        this.selected = new Playlist({
+            title: 'selected',
+            tracks: new Tracks([], { type: 'selected' })
+        });
+
         this.router = new Router();
 
         // the default playlist is all tracks
