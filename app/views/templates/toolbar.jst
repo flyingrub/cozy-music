@@ -14,7 +14,10 @@
     </div>
     <div id="search" class="input">
         <input id="search-text" type="text" placeholder="<%= t('search') %>">
-        <svg>
+        <svg class="spinner">
+            <use xlink:href="<%= require('../../assets/icons/spinner.svg') %>"/>
+        </svg>
+        <svg id="magnifier">
             <use xlink:href="<%= require('../../assets/icons/magnifier-sm.svg') %>"/>
         </svg>
     </div>

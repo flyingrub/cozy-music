@@ -29,13 +29,13 @@ let Application = Mn.Application.extend({
             title: 'All Songs',
             tracks: new Tracks([], { type: 'all' })
         });
-        let loadTrack = new Promise((loadTrackResolve, reject) => {
+        this.loadTrack = new Promise((loadTrackResolve, reject) => {
             let downloadPromise = this.allTracks.get('tracks').fetch({
                 data: { limit: TRACK_LIMIT }, remove: false
             });
             this.fetchTracks(downloadPromise, loadTrackResolve);
         });
-        loadTrack.then(()=> { syncFiles(); });
+        this.loadTrack.then(()=> { syncFiles(); });
 
 
         this.upNext = new Playlist({

@@ -74,6 +74,15 @@ div[role='toolbar']
             box-sizing: border-box
             position: relative
 
+            .spinner
+                display: none
+
+            &.loading
+                .spinner
+                    display: block
+                #magnifier
+                    display: none
+
             p
                 display: none
 
