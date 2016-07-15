@@ -62,11 +62,19 @@ const Player = Mn.ItemView.extend({
         audio.onerror = (e) => {
             let code = e.currentTarget.error.code;
             if (code != 4) {
-                alert(t('play error'));
+                let notification = {
+                    status: 'ko',
+                    message: t('play error')
+                }
+                application.channel.request('notification', notification);
                 this.reset();
             // When reseting the audio.src it shows an error.
             } else if (!audio.src.includes("NO_MUSIC")) {
-                alert(t('unsupported format'));
+                let notification = {
+                    status: 'ko',
+                    message: t('unsupported format')
+                }
+                application.channel.request('notification', notification);
                 this.reset();
             }
         };
