@@ -8,12 +8,14 @@ const ControlsExtended = Mn.ItemView.extend({
 
     ui: {
         volumeBar: '#volume-bar',
+        shuffle: '#shuffle',
         repeat: '#repeat',
         speaker: '#speaker'
     },
 
     events: {
         'mousedown @ui.volumeBar': 'changeVol',
+        'click @ui.shuffle': 'toggleShuffle',
         'click @ui.repeat': 'toggleRepeat',
         'click @ui.speaker': 'toggleVolume'
     },
@@ -51,6 +53,13 @@ const ControlsExtended = Mn.ItemView.extend({
                 application.appState.set('repeat', 'false');
                 break;
         }
+    },
+
+    toggleShuffle() {
+        application.channel.trigger('upnext:addCurrentPlaylist');
+        let shuffle = application.appState.get('shuffle');
+        application.appState.set('shuffle', !shuffle);
+        this.ui.shuffle.toggleClass('active', !shuffle);
     },
 
     toggleVolume() {

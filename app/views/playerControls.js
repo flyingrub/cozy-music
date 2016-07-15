@@ -1,5 +1,6 @@
 import Mn from 'backbone.marionette';
 import application from '../application';
+import { getRandomInt } from '../libs/utils';
 
 
 const Player = Mn.ItemView.extend({
@@ -130,8 +131,19 @@ const Player = Mn.ItemView.extend({
         let upNext = application.upNext.get('tracks');
         let currentTrackID = application.appState.get('currentTrack').get('_id');
         let currentTrack = upNext.get(currentTrackID);
-        let index = upNext.indexOf(currentTrack) + 1;
-        let next = upNext.at(index)
+
+        let index, next;
+        let oldIndex = upNext.indexOf(currentTrack);
+        if (application.appState.get('shuffle')) {
+            do {
+                index = getRandomInt(0, upNext.length - 1);
+            } while (index == oldIndex);
+            next = upNext.at(index);
+        } else {
+            index = oldIndex + 1;
+            next = upNext.at(index);
+        }
+
         if (repeat == 'track') {
             this.replayCurrent();
         } else if (next) {
