@@ -179,6 +179,11 @@ function saveTrack(musicFiles, tracksFileId) {
             }
         });
 
+        if (file.audio_metadata) {
+            file.audio_metadata.duration *= 1000;
+            t.set('metas', file.audio_metadata);
+        }
+
         if (!_.includes(tracksFileId, fileid)) { // does not contains fileid
             toSave.push(t);
         }

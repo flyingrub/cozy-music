@@ -49,7 +49,7 @@ const Playlist = Backbone.Model.extend({
                 break;
             case 'delete':
                 cozysdk.destroy('Playlist', model.get('_id'), (err, res) => {
-                    if (res) {
+                    if (!err) {
                         options.success();
                     }
                 });

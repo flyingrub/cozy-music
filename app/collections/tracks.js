@@ -89,7 +89,7 @@ const Tracks = Backbone.Collection.extend({
 // COZYSDK : Requests \\
 cozysdk.defineRequest('File', 'music', (doc) => {
         if (doc.class == 'music') {
-            emit(doc._id, doc);
+            emit(doc.name, doc);
         }
     }, (error, response) => {
 });
