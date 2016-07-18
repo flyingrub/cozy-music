@@ -29,9 +29,6 @@ div[role='toolbar']
             height: 40px
             fill: $white
 
-        .spinner
-            animation 1s linear infinite spin
-
     .load
         visibility: visible
         opacity: 1
@@ -47,10 +44,3 @@ div[role='toolbar']
     90%  {opacity: 1}
     100% {opacity: 0; visibility: hidden}
 }
-
-@keyframes spin
-    from
-        transform rotate(0deg)
-
-    to
-        transform rotate(359deg)

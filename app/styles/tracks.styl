@@ -1,4 +1,15 @@
 .tracks
+    &:not(.upNext)
+        .delete-from-upnext
+            display: none
+    &.upNext
+        .add-to-upnext
+            display: none
+    &:not(.playlist)
+        .remove-from-playlist
+            display: none
+
+
     div[role='rowheader']
         width: 100%
         color: $text-light
@@ -19,11 +30,11 @@
     .number-column-cell
         justify-content: center
         width: 42px
-        svg
-            display: none
+        .play-icon
+            visibility: hidden
             width: 18px
             height: 18px
-            fill: $red
+            fill: $svg
 
     .song-column-cell
         flex-grow: 1
@@ -38,14 +49,13 @@
     .length-column-cell
         width: 62px
 
+    .play-icon:hover
+        fill: $text-dark
+
     ul
-        .playing
-            color: $red
-            .song-column-cell
-                color: $red
-            .number-column-cell
-                svg
-                    display: block
+        display: flex
+        flex-direction: column
+
         li
             display: flex
             cursor: pointer
@@ -56,6 +66,22 @@
             color: $text-light
             position: relative
 
+            &.selected
+                background-color: $background-dark
+
+            &.playing
+                color: $red
+
+                .song-column-cell
+                    color: $red
+
+                .play-icon
+                    visibility: visible
+                    fill: $red
+
+                    .play
+                        display: none
+
             .song-column-cell
                 flex-grow: 1
                 font-size: 16px
@@ -63,5 +89,13 @@
 
         li:hover
             background-color: $background-dark
+
+            &:not(.playing)
+                .play-icon
+                    visibility: visible
+
+                    .speaker
+                            display: none
+
             .actions
                 visibility: visible

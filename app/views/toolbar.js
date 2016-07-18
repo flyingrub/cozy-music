@@ -35,7 +35,12 @@ const Toolbar = Mn.LayoutView.extend({
         this.showChildView('playlists', new PlaylistsView({
             collection: application.allPlaylists, model: application.appState
         }));
+
         application.channel.reply('notification', this.showNotification, this);
+
+        this.listenTo(application.channel, 'search:done', () => {
+            this.ui.search.removeClass('loading');
+        });
     },
 
     // Import the track when `Enter` is pressed
@@ -49,15 +54,16 @@ const Toolbar = Mn.LayoutView.extend({
         }
     },
 
-    debounceSearch: _.debounce(val => {
+    debounceSearch: _.debounce((val) => {
         application.router.navigate('search?q=' + val, { trigger: true });
-    }, 250),
+    }, 100),
 
     keySearchText(e) {
         e.stopPropagation();
         let val = this.ui.searchText.val();
         if (val) {
-            this.debounceSearch(val);
+            this.ui.search.addClass('loading');
+            this.debounceSearch(val, this);
         } else {
             application.router.navigate('/tracks', { trigger: true });
         }

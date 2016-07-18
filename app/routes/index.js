@@ -6,7 +6,7 @@ let Router = Backbone.Router.extend({
     routes: {
         'tracks': 'tracks',
         'upnext': 'upnext',
-        'search?q=:pattern': 'search',
+        'search?q=:pattern': 'searchAfterTrackLoaded',
         '': 'index'
     },
 
@@ -28,6 +28,10 @@ let Router = Backbone.Router.extend({
         application.appState.set('currentPlaylist', application.upNext);
     },
 
+    searchAfterTrackLoaded(pattern) {
+        application.loadTrack.then(() => { this.search(pattern); });
+    },
+
     // Search in the title, album and artist. Case unsensitive.
     search(pattern) {
         let models = application.allTracks.get('tracks').filter((item) => {
@@ -41,8 +45,9 @@ let Router = Backbone.Router.extend({
                 || search.test(metas.artist);
         });
         application.search.set('title', 'Results for "' + pattern + '"');
-        application.search.get('tracks').reset(models);
+        application.search.resetTrack(models);
         application.appState.set('currentPlaylist', application.search);
+        application.channel.trigger('search:done');
     }
 });
 

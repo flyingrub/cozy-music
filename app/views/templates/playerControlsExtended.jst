@@ -1,0 +1,37 @@
+<button id="shuffle">
+    <svg>
+        <use xlink:href="<%= require('../../assets/icons/shuffle-sm.svg') %>"/>
+    </svg>
+</button>
+<button id="repeat" <% if (repeat != 'false') { %> class="active" <% } %> >
+    <svg>
+        <% if (repeat == 'false') { %>
+            <use xlink:href="<%= require('../../assets/icons/repeat-sm.svg') %>"/>
+        <% } else if (repeat == 'track') { %>
+            <use xlink:href="<%= require('../../assets/icons/repeat-one-sm.svg') %>"/>
+        <% } else if (repeat == 'playlist') { %>
+            <use xlink:href="<%= require('../../assets/icons/repeat-sm.svg') %>"/>
+        <% } %>
+    </svg>
+</button>
+<button id="speaker">
+    <svg>
+        <% if (mute) { %>
+            <use xlink:href="<%= require('../../assets/icons/mute-sm.svg') %>"/>
+        <% } else { %>
+            <use xlink:href="<%= require('../../assets/icons/speaker-sm.svg') %>"/>
+        <% }%>
+    </svg>
+</button>
+<div id="volume-bar">
+    <% if (mute) { %>
+        <div id="volume" style="width:0%" ></div>
+    <% } else { %>
+        <div id="volume" style="width:<%= volumePercent %>" ></div>
+    <% }%>
+</div>
+<button id="broadcast">
+    <svg>
+        <use xlink:href="<%= require('../../assets/icons/broadcast-sm.svg') %>"/>
+    </svg>
+</button>

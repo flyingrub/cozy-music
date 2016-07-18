@@ -1,11 +1,11 @@
 <div class="tools">
-    <div class="button" id="sync-files">
+    <div class="button" id="sync-files" title="<%= t('sync tooltip') %>">
         <svg>
             <use xlink:href="<%= require('../../assets/icons/upload-sm.svg') %>"/>
         </svg>
         <p><%= t('sync with your files') %></p>
     </div>
-    <div class="button" id="import-sc">
+    <div class="button" id="import-sc"  title="<%= t('import tooltip') %>">
         <svg>
             <use xlink:href="<%= require('../../assets/icons/stream-sm.svg') %>"/>
         </svg>
@@ -14,7 +14,10 @@
     </div>
     <div id="search" class="input">
         <input id="search-text" type="text" placeholder="<%= t('search') %>">
-        <svg>
+        <svg class="spinner">
+            <use xlink:href="<%= require('../../assets/icons/spinner.svg') %>"/>
+        </svg>
+        <svg id="magnifier">
             <use xlink:href="<%= require('../../assets/icons/magnifier-sm.svg') %>"/>
         </svg>
     </div>

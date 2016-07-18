@@ -13,21 +13,27 @@ const Content = Mn.LayoutView.extend({
         tracks: '.tracks',
     },
 
-    modelEvents: {
-        'change:currentPlaylist': 'switchPlaylist'
-    },
-
-    onBeforeShow () {
+    onBeforeShow() {
         this.showChildView('header', new HeaderView({ model: this.model }));
-        this.switchPlaylist(null, this.model.get('currentPlaylist'));
+        this.showChildView('tracks', new TracksView({
+            collection: application.allTracks.get('tracks')
+        }));
+        this.setClass(application.appState.get('currentPlaylist'));
     },
 
-    // only the router change the current playlist
-    switchPlaylist (appState, currentPlaylist) {
-        this.showChildView('tracks', new TracksView({
-            collection: currentPlaylist.get('tracks')
-        }));
-    }
+    initialize() {
+         this.listenTo(application.appState,
+            'change:currentPlaylist',
+            (appState, currentPlaylist) => {
+                this.setClass(currentPlaylist);
+            }
+        );
+    },
+
+    setClass(currentPlaylist) {
+        let type = currentPlaylist.get('tracks').type;
+        this.$el.children('.tracks').get(0).className = 'tracks ' + type;
+    },
 });
 
 export default Content;
