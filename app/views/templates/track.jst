@@ -9,6 +9,11 @@
 <div class="artist-column-cell" role="gridcell"><%- artist %></div>
 <div class="album-column-cell" role="gridcell"><%- album %>
     <div class="actions">
+        <button class="drag" title="<%= t('drag') %>">
+            <svg>
+                <use xlink:href="<%= require('../../assets/icons/menu-sm.svg') %>"/>
+            </svg>
+        </button>
         <button class="add-to-upnext" title="<%= t('add to upnext') %>">
             <svg>
                 <use xlink:href="<%= require('../../assets/icons/add-to-playlist-sm.svg') %>"/>
