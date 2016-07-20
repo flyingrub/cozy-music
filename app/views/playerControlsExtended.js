@@ -24,6 +24,7 @@ const ControlsExtended = Mn.ItemView.extend({
         'change:currentVolume': 'onVolumeChange',
         'change:mute': 'render',
         'change:repeat': 'render',
+        'change:shuffle': 'render',
         'change:currentTrack': 'render'
     },
 
@@ -59,7 +60,6 @@ const ControlsExtended = Mn.ItemView.extend({
         application.channel.trigger('upnext:addCurrentPlaylist');
         let shuffle = application.appState.get('shuffle');
         application.appState.set('shuffle', !shuffle);
-        this.ui.shuffle.toggleClass('active', !shuffle);
     },
 
     toggleVolume() {
