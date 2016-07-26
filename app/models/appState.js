@@ -34,7 +34,6 @@ const AppState = Backbone.Model.extend({
             application.channel.trigger('player:load', track);
 
             // Initialize upNext
-            console.log(this.get('upNext'))
             let tracks = this.get('upNext');
             _.each(tracks, (t) => {
                 let id = t._id;

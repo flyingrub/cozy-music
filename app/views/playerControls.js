@@ -181,11 +181,23 @@ const Player = Mn.ItemView.extend({
     },
 
     serializeData() {
-        return _.extend(
-            {'isPlaying': !application.audio.paused },
-            this.model.toJSON()
-        );
+        let albumArt = false;
+        let currentTrack = this.model.get('currentTrack');
+        if (currentTrack) {
+            let picture = currentTrack.get('metas').picture;
+            if (picture && picture[0]) {
+                albumArt = picture[0].data;
+            }
+        }
+        console.log(albumArt)
+        return {
+            'isPlaying': !application.audio.paused,
+            'albumArt': albumArt
+        };
     }
+
+
+
 });
 
 export default Player;
