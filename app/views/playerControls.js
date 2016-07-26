@@ -189,7 +189,6 @@ const Player = Mn.ItemView.extend({
                 albumArt = picture[0].data;
             }
         }
-        console.log(albumArt)
         return {
             'isPlaying': !application.audio.paused,
             'albumArt': albumArt

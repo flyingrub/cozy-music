@@ -3,7 +3,7 @@ import Tracks from '../collections/tracks';
 import Playlist from '../models/playlist';
 import application from '../application';
 import cozysdk from 'cozysdk-client';
-
+import { getDataURI } from './utils';
 
 const api = 'https://api.soundcloud.com';
 const clientID = '02gUJC0hH2ct1EGOcYXQIzRFU91c72Ea';
@@ -45,7 +45,10 @@ class Soundcloud {
                     }
                 }
                 if (!trackID) {
-                    this.importTrack(track, playlist);
+                    let self = this;
+                    getDataURI(track.artwork_url, (picture) => {
+                        self.importTrack(track, picture, playlist);
+                    });
                 } else {
                     if (playlist) {
                         let tracks = application.allTracks.get('tracks');
@@ -64,7 +67,7 @@ class Soundcloud {
     }
 
     // Set the track's metas and save it.
-    importTrack(track, playlist) {
+    importTrack(track, picture, playlist) {
         if (!track.streamable) {
             let notification = {
                 status: 'ko',
@@ -78,17 +81,21 @@ class Soundcloud {
             type: 'soundcloud',
             url: track.stream_url
         });
-        newTrack.set('metas', {
+        let metas = {
             title: track.title,
             artist: track.user.username,
             genre: track.genre,
-            duration: track.duration
-        });
+            duration: track.duration,
+            picture: [ { data: picture } ]
+        }
+        if (playlist) metas.album = playlist.get('title');
+        newTrack.set('metas', metas);
         application.allTracks.get('tracks').create(newTrack, {
             success: () => {
                 if (playlist) playlist.addTrack(newTrack);
             }
         });
+
         let notification = {
             status: 'ok',
             message: t('stream track imported')
