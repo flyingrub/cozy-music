@@ -20,15 +20,17 @@ const Player = Mn.ItemView.extend({
     initialize() {
         this.listenTo(application.channel, {
             'upnext:reset': this.reset,
-            'player:next': this.next
+            'player:next': this.next,
+            'player:load': this.load
         });
         this.listenTo(application.appState, 'change:currentTrack',
             function(appState, currentTrack) {
                 if (currentTrack) {
-                    this.load(currentTrack);
+                    this.loadAndPlay(currentTrack);
                 }
             }
         );
+
         $(document).keyup((e) => {
             e.preventDefault();
             let audio = application.audio;
@@ -58,6 +60,7 @@ const Player = Mn.ItemView.extend({
                     break;
             }
         });
+
         let audio = application.audio;
         audio.onended = () => { this.next() };
         audio.onerror = (e) => {
@@ -93,15 +96,27 @@ const Player = Mn.ItemView.extend({
     load(track) {
         let self = this;
         track.getStream(function(url) {
-            self.play(url);
+            self.play(url, false);
         });
     },
 
-    play(url) {
+    loadAndPlay(track) {
+        let self = this;
+        track.getStream(function(url) {
+            self.play(url, true);
+        });
+    },
+
+    play(url, play) {
         let audio = application.audio;
         audio.src = url;
         audio.load();
-        audio.play();
+        if (play) {
+            audio.play();
+        } else {
+            audio.pause();
+            audio.currentTime = this.model.get('currentTime');
+        }
         this.render();
     },
 

@@ -20,10 +20,6 @@ let Application = Mn.Application.extend({
         this.channel = _.result(this, 'channel') || Radio.channel(this.channelName);
     },
 
-    initialize () {
-        this.appState = new AppState();
-    },
-
     onBeforeStart () {
         this.allTracks = new Playlist({
             title: 'All Songs',
@@ -37,6 +33,7 @@ let Application = Mn.Application.extend({
         });
         this.loadTrack.then(()=> { syncFiles(); });
 
+        this.appState = new AppState();
 
         this.upNext = new Playlist({
             title: 'Up Next',
