@@ -6,6 +6,7 @@
         .add-to-upnext
             display: none
     &:not(.playlist)
+        .drag,
         .remove-from-playlist
             display: none
 
@@ -52,20 +53,28 @@
     .play-icon:hover
         fill: $text-dark
 
-    ul
+    #track-list
         display: flex
         flex-direction: column
 
-        li
+        > li
             display: flex
             cursor: pointer
             height: 41px
             background-color: transparent
-            box-shadow: inset 0 -1px 0 0 #d5dce1
+            border-bottom: 1px solid #d5dce1
             font-size: 14px
             color: $text-light
             position: relative
 
+            &.dragged
+                opacity: 0.5
+
+            &.dragover:not(.dragged)
+                &.below
+                    border-bottom: 2px solid $red
+                &.above
+                    border-top: 2px solid $red
             &.selected
                 background-color: $background-dark
 
@@ -87,7 +96,7 @@
                 font-size: 16px
                 color: $text-dark
 
-        li:hover
+        li:hover:not(.dragover)
             background-color: $background-dark
 
             &:not(.playing)

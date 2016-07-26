@@ -18,7 +18,7 @@
   "dependencies": {
     "async": "2.0.0-rc.2",
     "backbone": "1.2.3",
-    "backbone.marionette": "2.4.4",
+    "backbone.marionette": "2.4.7",
     "backbone.radio": "1.0.2",
     "backbone.subroute": "0.4.6",
     "cozysdk-client": "0.0.5",

@@ -39,6 +39,12 @@ const TrackView = Mn.LayoutView.extend({
         change: 'render'
     },
 
+    attributes() {
+        return {
+            'data-id': this.model.get('_id')
+        }
+    },
+
     initialize () {
         this.listenTo(application.appState, {
             'change:currentTrack': this.togglePlayingState,
@@ -51,6 +57,14 @@ const TrackView = Mn.LayoutView.extend({
                 this.setClass();
             }
         }, this);
+
+        // Reorder the track on drag and drop
+        this.listenTo(application.channel,'playlist:reorder', (tracks) => {
+            if (tracks.get(this.model.get('_id'))) {
+                this.setClass();
+                this.setOrder();
+            }
+        }, this);
     },
 
     onRender() {
@@ -58,7 +72,7 @@ const TrackView = Mn.LayoutView.extend({
             model: this.model,
             collection: application.allPlaylists
         }));
-        this.setClass();
+        application.loadPlaylist.then(()=> { this.setClass(); });
     },
 
     select(e) {

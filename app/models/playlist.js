@@ -73,6 +73,23 @@ const Playlist = Backbone.Model.extend({
         if (tracks.type == 'playlist') this.save();
     },
 
+    // Insert a track at a given pos
+    reorderTrack(track, pos) {
+        let tracks = this.get('tracks');
+
+        // We need to retrieve the old track by id
+        // sometimes backbone fail to recognise it's the same track
+        let old = tracks.get(track.get('_id'));
+        let oldIndex = tracks.indexOf(old);
+
+        if (oldIndex == pos) return;
+        tracks.remove(old);
+        tracks.add(track, {at: pos});
+        application.channel.trigger('playlist:reorder', tracks);
+        if (tracks.type == 'playlist') this.save();
+
+    },
+
     // Used to resetUpNext and set search track
     resetTrack(tracks) {
         let oldTrack = _.clone(this.get('tracks'));
