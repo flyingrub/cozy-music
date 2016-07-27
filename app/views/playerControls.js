@@ -62,26 +62,60 @@ const Player = Mn.ItemView.extend({
         });
 
         let audio = application.audio;
-        audio.onended = () => { this.next() };
-        audio.onerror = (e) => {
-            let code = e.currentTarget.error.code;
-            if (code != 4) {
-                let notification = {
+        audio.onended = this.next.bind(this);
+        audio.onerror = this.onAudioError.bind(this);
+    },
+
+    onAudioError(e) {
+        let message, notification;
+        switch (e.target.error.code) {
+            case e.target.error.MEDIA_ERR_ABORTED:
+                notification = {
+                    status: 'ko',
+                    message: t('play abort')
+                }
+                application.channel.request('notification', notification);
+                this.reset();
+                break;
+            case e.target.error.MEDIA_ERR_NETWORK:
+                notification = {
+                    status: 'ko',
+                    message: t('network error')
+                }
+                application.channel.request('notification', notification);
+                this.reset();
+                break;
+            case e.target.error.MEDIA_ERR_DECODE:
+                notification = {
+                    status: 'ko',
+                    message: t('media error')
+                }
+                application.channel.request('notification', notification);
+                this.reset();
+                break;
+            case e.target.error.MEDIA_ERR_SRC_NOT_SUPPORTED:
+                if (application.audio.src.includes("NO_MUSIC")) break;
+                let track = this.model.get('currentTrack');
+                let dialog = {
+                    accept: () => {
+                        track.set('hidden', true);
+                        track.save();
+                    },
+                    dismiss: () => {  },
+                    title: t('title track problem'),
+                    message: t('track problem')
+                }
+                application.channel.request('dialog', dialog);
+                this.reset();
+                break;
+            default:
+                notification = {
                     status: 'ko',
                     message: t('play error')
                 }
                 application.channel.request('notification', notification);
                 this.reset();
-            // When reseting the audio.src it shows an error.
-            } else if (!audio.src.includes("NO_MUSIC")) {
-                let notification = {
-                    status: 'ko',
-                    message: t('unsupported format')
-                }
-                application.channel.request('notification', notification);
-                this.reset();
-            }
-        };
+        }
     },
 
     reset() {
@@ -122,7 +156,7 @@ const Player = Mn.ItemView.extend({
 
     toggle() {
         let audio = application.audio;
-        if (audio.paused && audio.src && !audio.src.contains("NO_MUSIC")) {
+        if (audio.paused && audio.src && !audio.src.includes("NO_MUSIC")) {
             audio.play();
         } else if (audio.src) {
             audio.pause();

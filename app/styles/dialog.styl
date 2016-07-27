@@ -1,0 +1,63 @@
+div[role='dialog']
+    .overlay
+        position: fixed
+        top: 0
+        left: 0
+        width: 100%
+        height: 100%
+        background-color: rgba(78, 91, 105, 0.75)
+
+    .dialog
+        box-sizing: border-box
+        padding: 32px
+        position: fixed
+        top: 50%
+        left: 50%
+        transform: translate(-50%, -50%)
+        width: 480px
+        border-radius: 10px
+        background-color: $white
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.17), 0 6px 18px 0 rgba(0, 0, 0, 0.19)
+
+        .buttons
+            margin-top: 32px
+            display: flex
+            justify-content: space-between
+
+        .button
+            cursor: pointer
+            font-family: 'Source Sans Pro'
+            font-weight: bold
+            color: rgba(78, 91, 105, 0.75);
+            border-radius: 3px
+            background-color: #eff1f4;
+            height: 48px
+            width: 200px
+            box-sizing: border-box
+            text-align:center
+
+            &.accept
+                background-color: #ff5d47
+                color: white
+
+            &:active
+                padding-top: 1px
+
+        h4
+            height: 33px
+            font-family: "Source Sans Pro"
+            font-size: 24px
+            font-weight: 400
+            line-height: 0.83
+            color: #32363f
+            overflow: hidden
+            text-overflow: "…"
+            margin-bottom: 16px
+
+        p
+            font-family: "Source Sans Pro"
+            font-size: 16px
+            line-height: 1.3
+            color: $text-dark
+            overflow: hidden
+            text-overflow: "…"
