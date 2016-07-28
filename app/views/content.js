@@ -31,7 +31,7 @@ const Content = Mn.LayoutView.extend({
     },
 
     setClass(currentPlaylist) {
-        let type = currentPlaylist.get('tracks').type;
+        let type = currentPlaylist.get('type');
         this.$el.children('.tracks').get(0).className = 'tracks ' + type;
     },
 });

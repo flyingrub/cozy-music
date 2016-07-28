@@ -29,7 +29,7 @@ const TracksView = Mn.CompositeView.extend({
         for (let i=0; i < this.sheet.cssRules.length; i++) {
             this.sheet.deleteRule(i);
         }
-        let type = currentPlaylist.get('tracks').type;
+        let type = currentPlaylist.get('type');
         if (type == 'playlist') {
             let id = currentPlaylist.get('_id')
             this.sheet.insertRule(`
