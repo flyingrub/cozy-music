@@ -18,10 +18,10 @@ class Soundcloud {
         application.channel.request('notification', notification);
         this.get('/resolve', { url: url }, (res) => {
             if (res.kind == 'playlist') {
-                let playlistTracks = new Tracks([], { type: 'playlist' });
                 let playlist = new Playlist({
                     title: res.title,
-                    tracks: playlistTracks
+                    tracks: new Tracks(),
+                    type: 'playlist'
                 });
                 application.allPlaylists.create(playlist);
                 for (let i = 0; i < res.tracks.length; i++) {
