@@ -74,7 +74,7 @@ const Playlists = Mn.CompositeView.extend({
     serializeData() {
         let currentPlaylist = application.appState.get('currentPlaylist');
         return {
-            type: currentPlaylist.get('tracks').type
+            type: currentPlaylist.get('type')
         }
     }
 });

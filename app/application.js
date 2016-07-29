@@ -20,14 +20,11 @@ let Application = Mn.Application.extend({
         this.channel = _.result(this, 'channel') || Radio.channel(this.channelName);
     },
 
-    initialize () {
-        this.appState = new AppState();
-    },
-
     onBeforeStart () {
         this.allTracks = new Playlist({
             title: 'All Songs',
-            tracks: new Tracks([], { type: 'all' })
+            tracks: new Tracks(),
+            type: 'all'
         });
         this.loadTrack = new Promise((loadTrackResolve, reject) => {
             let downloadPromise = this.allTracks.get('tracks').fetch({
@@ -37,20 +34,24 @@ let Application = Mn.Application.extend({
         });
         this.loadTrack.then(()=> { syncFiles(); });
 
+        this.appState = new AppState();
 
         this.upNext = new Playlist({
             title: 'Up Next',
-            tracks: new Tracks([], { type: 'upNext' })
+            tracks: new Tracks(),
+            type: 'upNext'
         });
 
         this.search = new Playlist({
             title: 'Results for ',
-            tracks: new Tracks([], { type: 'search' })
+            tracks: new Tracks(),
+            type: 'search'
         });
 
         this.selected = new Playlist({
             title: 'selected',
-            tracks: new Tracks([], { type: 'selected' })
+            tracks: new Tracks(),
+            type: 'selected'
         });
 
         this.router = new Router();

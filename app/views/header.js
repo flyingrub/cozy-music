@@ -54,7 +54,7 @@ const Header = Mn.ItemView.extend({
         return {
             title: currentPlaylist.get('title'),
             count: currentPlaylist.get('tracks').length,
-            type: currentPlaylist.get('tracks').type
+            type: currentPlaylist.get('type')
         }
     },
 

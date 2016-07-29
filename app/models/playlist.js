@@ -10,14 +10,16 @@ const Playlist = Backbone.Model.extend({
         _id: undefined,
         title: '',
         tracks: '',
+        type: '',
         dateAdded: Date.now
     },
 
     initialize(attributes, options) {
-        let tracks = attributes.tracks || new Tracks([], {
-            type: 'playlist'
-        });
+        let tracks = attributes.tracks || new Tracks();
+        let type = attributes.type || 'playlist';
         this.set('tracks', tracks);
+        this.set('type', type);
+        this.bindListeners();
     },
 
     idAttribute:'_id',
@@ -57,12 +59,53 @@ const Playlist = Backbone.Model.extend({
         }
     },
 
+    bindListeners() {
+        this.on('change:hidden', this.removeTrack, this);
+
+        // AllTracks doesn't need all other listener
+        if (this.get('type') == 'all') return;
+
+        if (this.get('type') == 'upNext') {
+            // Add the current Track to upNext
+            this.listenTo(application.appState,
+                'change:currentTrack',
+                function(appState, currentTrack) {
+                    this.addTrack(currentTrack);
+                }
+            );
+            this.listenTo(
+                application.channel,{
+                // Reset upNext when clicking on the reset button
+                'upnext:reset': this.resetTrack,
+                // Add current playlist to upNext
+                'upnext:addCurrentPlaylist': this.addCurrentPlaylistToUpNext
+            });
+        }
+        // Remove a track from all it's playlist when he is destroyed
+        this.listenTo(
+            application.allTracks.get('tracks'),
+            'remove',
+            function(removedTrack, allTracks) {
+                this.removeTrack(removedTrack);
+            }
+        );
+    },
+
+    // UpNext : Add current playlist to upNext
+    addCurrentPlaylistToUpNext() {
+        let currentPlaylist = application.appState.get('currentPlaylist');
+        let currentTracks = currentPlaylist.get('tracks');
+        currentTracks.each(track => {
+            this.addTrack(track);
+        });
+    },
+
     // Add a track to the playlist
     addTrack(track) {
         let tracks = this.get('tracks');
         tracks.push(track);
         application.channel.trigger('track:playlistChanged', track);
-        if (tracks.type == 'playlist') this.save();
+        if (this.get('type') == 'playlist') this.save();
     },
 
     // Remove a track to the playlist
@@ -70,7 +113,7 @@ const Playlist = Backbone.Model.extend({
         let tracks = this.get('tracks');
         tracks.remove(track);
         application.channel.trigger('track:playlistChanged', track);
-        if (tracks.type == 'playlist') this.save();
+        if (this.get('type') == 'playlist') this.save();
     },
 
     // Insert a track at a given pos

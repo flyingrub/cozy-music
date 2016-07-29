@@ -30,6 +30,7 @@ const Timeline = Mn.ItemView.extend({
         });
         let audio = application.audio;
         audio.ontimeupdate = this.render;
+        this.listenTo(application.channel, 'player:load', this.render);
     },
 
     // Go to a certain time in the track
@@ -46,24 +47,25 @@ const Timeline = Mn.ItemView.extend({
     serializeData() {
         let currentTrack = application.appState.get('currentTrack');
         let audio = application.audio;
-        let currentTime, totalTime, timePercent
+        let currentTime, totalTime, timePercent, title;
+
         if (currentTrack) {
             currentTime = timeToString(audio.currentTime);
             totalTime = isNaN(audio.duration) ? '00:00' : timeToString(audio.duration);
             timePercent = audio.currentTime / audio.duration * 100 + '%';
-        } else {
+            title = currentTrack.get('metas').title;
+        } else  {
             currentTime = '00:00';
             totalTime = '00:00';
             timePercent = '00:00';
+            title = t('no playing music');
         }
-        return _.extend(
-            {
-                'currentTime': currentTime,
-                'totalTime': totalTime,
-                'timePercent': timePercent
-            },
-            this.model.toJSON()
-        );
+        return {
+            'audioCurrentTime': currentTime,
+            'totalTime': totalTime,
+            'timePercent': timePercent,
+            'title': title
+        }
     }
 });
 

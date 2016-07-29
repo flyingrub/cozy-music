@@ -72,7 +72,7 @@ const TrackView = Mn.LayoutView.extend({
             model: this.model,
             collection: application.allPlaylists
         }));
-        application.loadPlaylist.then(()=> { this.setClass(); });
+        application.loadPlaylist.then(this.setClass.bind(this));
     },
 
     select(e) {
@@ -191,10 +191,11 @@ const TrackView = Mn.LayoutView.extend({
     },
 
     delete(e) {
-        let item = this.model;
-        item.set('hidden', true);
-        item.save();
         e.stopPropagation();
+        let track = this.model;
+        track.set('hidden', true);
+        track.save();
+        application.allTracks.removeTrack(track);
     },
 
     setClass() {
@@ -245,7 +246,7 @@ const TrackView = Mn.LayoutView.extend({
             artist: '',
             album: '',
             number: '',
-            type: currentPlaylist.get('tracks').type
+            type: currentPlaylist.get('type')
         }), {
             duration: metas.duration? timeToString(metas.duration/1000):'--:--'
         });
@@ -254,14 +255,15 @@ const TrackView = Mn.LayoutView.extend({
     setOrder() {
         let orderTrack = '';
         let currentPlaylist = application.appState.get('currentPlaylist');
-        if (currentPlaylist.get('tracks').type == 'upNext') {
+        let type = currentPlaylist.get('type')
+        if (type == 'upNext') {
             if (this.$el.hasClass('playlist-upNext')) {
                 let orderObj = this.order.find((o) => {
                     return o.id == 'upNext'
                 });
                 orderTrack = orderObj.order;
             }
-        } else if (currentPlaylist.get('tracks').type == 'playlist') {
+        } else if (type == 'playlist') {
             let id = currentPlaylist.get('_id')
             if (this.$el.hasClass('playlist-' + id)) {
                 let orderObj = this.order.find((o) => {

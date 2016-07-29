@@ -1,12 +1,8 @@
 <div class="text-container">
-    <% if (!currentTrack) { %>
-            <p id="trackname"><%= t('no playing music') %></p>
-    <% } else { %>
-            <p id="trackname"><%= currentTrack.get('metas').title %></p>
-    <% }%>
+    <p id="trackname"><%= title %></p>
 </div>
 <div id="progress-bar">
     <div id="progress" style="width:<%= timePercent %>"></div>
 </div>
-<p id="current-time"><%= currentTime %></p>
+<p id="current-time"><%= audioCurrentTime %></p>
 <p id="total-time"><%= totalTime %></p>

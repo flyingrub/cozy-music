@@ -7,57 +7,8 @@ const Tracks = Backbone.Collection.extend({
 
     model: Track,
 
-    initialize(models, options) {
-        this.type = options.type;
-        if (this.type == 'upNext') {
-            this.listenTo(application.appState,
-                'change:currentTrack',
-                function(appState, currentTrack) {
-                    application.upNext.addTrack(currentTrack);
-                }
-            );
-            this.listenTo(
-                application.channel,{
-                'upnext:reset': this.resetUpNext,
-                'upnext:addCurrentPlaylist': this.addCurrentPlaylistToUpNext
-            });
-        }
-
-        // Remove a track from all it's playlist when he is destroyed
-        if (this.type != 'all') {
-            this.listenTo(
-                application.allTracks.get('tracks'),
-                'remove',
-                function(removedTrack, allTracks) {
-                    this.remove(removedTrack);
-                }
-            );
-        }
-        this.on('change:hidden', this.removeTrack, this);
-    },
-
-    // UpNext : reset
-    resetUpNext() {
-        application.upNext.resetTrack();
-    },
-
-    // UpNext : Add current playlist to upNext if no track in UpNext
-    addCurrentPlaylistToUpNext() {
-        let currentPlaylist = application.appState.get('currentPlaylist');
-        let currentTracks = currentPlaylist.get('tracks');
-        if (this.length == 0) {
-            currentTracks.each(track => {
-                application.upNext.addTrack(track);
-            });
-        }
-    },
-
-    removeTrack(track) {
-        this.remove(track);
-    },
-
     sync(method, model, options) {
-        if (method == 'read' && this.type == "all") {
+        if (method == 'read') {
             let promise = new Promise((resolve, reject) => {
                 cozysdk.run('Track', 'playable', options.data, (err, res) => {
                     if (res) {

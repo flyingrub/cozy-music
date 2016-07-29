@@ -1,9 +1,9 @@
-<button id="shuffle">
+<button id="shuffle" <% if (shuffle) { %> aria-pressed="true" <% } %>>
     <svg>
         <use xlink:href="<%= require('../../assets/icons/shuffle-sm.svg') %>"/>
     </svg>
 </button>
-<button id="repeat" <% if (repeat != 'false') { %> class="active" <% } %> >
+<button id="repeat" <% if (repeat != 'false') { %> aria-pressed="true" <% } %> >
     <svg>
         <% if (repeat == 'false') { %>
             <use xlink:href="<%= require('../../assets/icons/repeat-sm.svg') %>"/>
