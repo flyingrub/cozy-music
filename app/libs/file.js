@@ -4,7 +4,6 @@ import cozysdk from 'cozysdk-client';
 import async from 'async';
 
 export function syncFiles() {
-
     cozysdk.run('Track', 'oldDoctype', {}, (err, tracks) => {
         if (tracks.length > 0) {
             createCozicFolder(tracks);
@@ -144,11 +143,18 @@ function getAllTracksFileId(musicFiles) {
 }
 
 // Delete track if the files associated is deleted too
+// Or if the track is a duplication
 function deleteTrack(allTracks, musicFilesFileId, musicFiles, tracksFileId) {
     let toDelete= [];
     for (let i = 0; i < allTracks.length; i++) {
         let t = allTracks[i];
-        if (!_.includes(musicFilesFileId, t.get('ressource').fileID)) {
+        let duplication = allTracks.filter((track) => {
+            return track.get('ressource').fileID == t.get('ressource').fileID;
+        });
+        let isDuplication = duplication.length > 1;
+        let isDeleted = !_.includes(musicFilesFileId, t.get('ressource').fileID)
+
+        if (isDuplication || isDeleted) {
             toDelete.push(t)
         }
     }
@@ -219,4 +225,5 @@ function saveTrackEnded() {
         message: t('all your audio files are synced')
     }
     application.channel.request('notification', notification);
+    application.syncing = false;
 }
