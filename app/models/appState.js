@@ -12,6 +12,10 @@ const AppState = Backbone.Model.extend({
         repeat: 'false', // can be 'false' / 'track' / 'playlist'
         currentVolume: 0.5,
         mute: false,
+        sort: {
+            by: 'default', // can be 'default' / 'title' / artist' / 'album'
+            direction :'normal' // can be 'normal' / 'reverse'
+        },
 
         // Used only to retrieve the last app_state
         currentTime: 0,
@@ -60,6 +64,7 @@ const AppState = Backbone.Model.extend({
         var storage = window.localStorage;
         let save = this.toJSON();
         delete save.currentPlaylist; // Don't save currentPlaylist
+        delete save.sort; // Don't save Sort
         storage.setItem(this.get('id'), JSON.stringify(save));
     }
 });

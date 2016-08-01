@@ -67,6 +67,13 @@ let Application = Mn.Application.extend({
 
         this.allPlaylists = new Playlists();
         this.loadPlaylist = this.allPlaylists.fetch(); // Promise
+
+
+        // Sorted Collection that contains only the model ID
+        this.allTracksByArtist = new Tracks([], { viewName: 'playableByArtist'});
+        this.allTracksByAlbum = new Tracks([], { viewName: 'playableByAlbum'});
+        this.allTracksByArtist.fetch();
+        this.allTracksByAlbum.fetch();
     },
 
     // Get all Tracks by TRACK_LIMIT

@@ -1,8 +1,25 @@
 <div role="rowheader">
-	<div class="number-column-cell" role="gridcell">#</div>
-	<div class="song-column-cell" role="gridcell"><%= t('song') %></div>
-	<div class="artist-column-cell" role="gridcell"><%= t('artist') %></div>
-	<div class="album-column-cell" role="gridcell"><%= t('album') %></div>
-	<div class="length-column-cell" role="gridcell"><%= t('length') %></div>
+    <div id="number" class="number-column-cell" role="gridcell">#
+
+    </div>
+    <div id="title" class="song-column-cell" role="gridcell"><%= t('song') %>
+        <svg>
+            <use class="normal" xlink:href="<%= require('../../assets/icons/arrow-down-sm.svg') %>"/>
+            <use class="reverse" xlink:href="<%= require('../../assets/icons/arrow-up-sm.svg') %>"/>
+        </svg>
+    </div>
+    <div id="artist" class="artist-column-cell" role="gridcell"><%= t('artist') %>
+        <svg>
+            <use class="normal" xlink:href="<%= require('../../assets/icons/arrow-down-sm.svg') %>"/>
+            <use class="reverse" xlink:href="<%= require('../../assets/icons/arrow-up-sm.svg') %>"/>
+        </svg>
+    </div>
+    <div id="album" class="album-column-cell" role="gridcell"><%= t('album') %>
+        <svg>
+            <use class="normal" xlink:href="<%= require('../../assets/icons/arrow-down-sm.svg') %>"/>
+            <use class="reverse" xlink:href="<%= require('../../assets/icons/arrow-up-sm.svg') %>"/>
+        </svg>
+    </div>
+    <div id="length" class="length-column-cell" role="gridcell"><%= t('length') %></div>
 </div>
 <ul id="track-list"></ul>

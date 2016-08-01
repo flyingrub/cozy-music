@@ -22,17 +22,24 @@ const Content = Mn.LayoutView.extend({
     },
 
     initialize() {
-         this.listenTo(application.appState,
-            'change:currentPlaylist',
-            (appState, currentPlaylist) => {
-                this.setClass(currentPlaylist);
+         this.listenTo(
+            application.appState,
+            {
+                'change:currentPlaylist': this.setClass,
+                'change:sort': this.setClass,
             }
         );
     },
 
-    setClass(currentPlaylist) {
+    // Add Some class used to Display / Hide menu button in track
+    setClass() {
+        let currentPlaylist = application.appState.get('currentPlaylist');
         let type = currentPlaylist.get('type');
         this.$el.children('.tracks').get(0).className = 'tracks ' + type;
+
+        let sort = application.appState.get('sort');
+        let isSorted = Boolean(sort.by != 'default');
+        this.$el.children('.tracks').toggleClass('sort', isSorted);
     },
 });
 

@@ -12,7 +12,11 @@ const TracksView = Mn.CompositeView.extend({
     childView: TrackView,
 
     events: {
-         'mousedown .drag': 'dragStart'
+         'mousedown .drag': 'dragStart',
+         'click #title': 'sortByTitle',
+         'click #artist': 'sortByArtist',
+         'click #album': 'sortByAlbum'
+
     },
 
     initialize() {
@@ -21,6 +25,65 @@ const TracksView = Mn.CompositeView.extend({
             'model': undefined,
             'newIndex': undefined
         };
+    },
+
+    sortByArtist(e) {
+        this.sortBy(e, application.allTracksByArtist);
+    },
+
+    sortByTitle(e) {
+        this.sortBy(e, application.allTracks.get('tracks'));
+    },
+
+    sortByAlbum(e) {
+        this.sortBy(e, application.allTracksByAlbum);
+    },
+
+    sortBy(e, sortType) {
+        let sort = application.appState.get('sort');
+
+        // Set the correct new sort
+        if (sort.by == sortType) {
+            if (sort.direction == 'normal') {
+                sort.direction = 'reverse'
+            } else if (sort.direction == 'reverse') {
+                sort.by = 'default';
+                sort.direction = 'normal'
+            }
+        } else {
+            sort.by = sortType;
+            sort.direction = 'normal';
+        }
+        application.appState.set('sort', sort);
+
+        // it seems it doesn't automatically trigger the event
+        application.appState.trigger('change:sort', application.appState, sort);
+        this.setSortClass(e, sort);
+    },
+
+    // Display the arrow according to the sort state
+    setSortClass(e, sort) {
+        // Remove all class if no particular sort
+        if (sort.by == 'default') {
+            let el = this.$el.find('[role="rowheader"]')
+                .children()
+                .removeClass('sort sort-reverse');
+            return;
+        }
+
+        let el = $(e.currentTarget);
+
+        // Remove all class
+        el.removeClass('sort sort-reverse')
+            .siblings()
+            .removeClass('sort sort-reverse');
+
+        // Add the correct one
+        if (sort.direction == 'normal') {
+            el.addClass('sort');
+        } else {
+            el.addClass('sort-reverse');
+        }
     },
 
     onRender() {

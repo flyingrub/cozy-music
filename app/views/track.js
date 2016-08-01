@@ -49,6 +49,7 @@ const TrackView = Mn.LayoutView.extend({
         this.listenTo(application.appState, {
             'change:currentTrack': this.togglePlayingState,
             'change:currentPlaylist': this.setOrder,
+            'change:sort': this.setOrder
         });
 
         // if the current track is added or removed from a playlist, run setPlaylist()
@@ -95,14 +96,18 @@ const TrackView = Mn.LayoutView.extend({
             application.selected.addTrack(this.model);
         } else if (selectedTracks.length != 0 && e.shiftKey) {
             let currentPlaylist = application.appState.get('currentPlaylist');
-            let currentTracks = currentPlaylist.get('tracks');
+            let collection = currentPlaylist.get('tracks');
 
+            let sort = application.appState.get('sort');
+            if (sort.by != 'default') {
+                collection = sort.by;
+            }
             let lastAddedTrack = selectedTracks.at(-1);
-            lastAddedTrack = currentTracks.get(lastAddedTrack.get('_id'));
-            let thisTrack = currentTracks.get(this.model.get('_id'));
+            lastAddedTrack = collection.get(lastAddedTrack.get('_id'));
+            let thisTrack = collection.get(this.model.get('_id'));
 
-            let startIndex = currentTracks.indexOf(lastAddedTrack);
-            let endIndex = currentTracks.indexOf(thisTrack);
+            let startIndex = collection.indexOf(lastAddedTrack);
+            let endIndex = collection.indexOf(thisTrack);
 
             // Switch the two index
             if (endIndex < startIndex){
@@ -111,7 +116,7 @@ const TrackView = Mn.LayoutView.extend({
                 endIndex = temp;
             }
             for (let i = startIndex; i <= endIndex; i++){
-                application.selected.addTrack(currentTracks.at(i));
+                application.selected.addTrack(collection.at(i));
             }
         } else if (selectedTracks.length != 0) {
             application.selected.resetTrack(this.model);
@@ -253,6 +258,7 @@ const TrackView = Mn.LayoutView.extend({
     },
 
     setOrder() {
+        let sort = application.appState.get('sort');
         let orderTrack = '';
         let currentPlaylist = application.appState.get('currentPlaylist');
         let type = currentPlaylist.get('type')
@@ -262,6 +268,13 @@ const TrackView = Mn.LayoutView.extend({
                     return o.id == 'upNext'
                 });
                 orderTrack = orderObj.order;
+            }
+        } else if (sort.by != 'default') {
+            let collection = sort.by;
+            let track = collection.get(this.model.get('_id'));
+            orderTrack = collection.indexOf(track);
+            if (sort.direction == 'reverse') {
+                orderTrack = collection.length - orderTrack + 1
             }
         } else if (type == 'playlist') {
             let id = currentPlaylist.get('_id')

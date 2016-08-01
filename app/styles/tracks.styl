@@ -9,6 +9,9 @@
         .drag,
         .remove-from-playlist
             display: none
+    &.sort
+        .drag
+            display: none
 
 
     div[role='rowheader']
@@ -23,10 +26,38 @@
         font-size: 13px
         text-transform: uppercase
 
+        :not(#number)
+            svg
+                display: none
+
+        [role='gridcell']
+            cursor: pointer
+            user-select: none
+
+            > svg
+                padding-left: 4px
+                width: 16px
+                height: 16px
+                fill: #f14a53
+
     [role='gridcell']
         text-align: left
         display: flex;
         align-items: center
+
+    .sort
+        svg
+            display: inline !important
+
+        .reverse
+            display: none
+
+    .sort-reverse
+        svg
+            display: inline !important
+
+        .normal
+            display: none
 
     .number-column-cell
         justify-content: center
@@ -104,7 +135,7 @@
                     visibility: visible
 
                     .speaker
-                            display: none
+                        display: none
 
             .actions
                 visibility: visible
