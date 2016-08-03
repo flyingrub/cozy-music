@@ -18,3 +18,20 @@ export function timeToString(time) {
 export function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min +1)) + min;
 }
+
+export function getDataURI(url, callback) {
+    let image = new Image();
+
+    image.onload = () => {
+        let canvas = document.createElement('canvas');
+        canvas.width = image.naturalWidth;
+        canvas.height = image.naturalHeight;
+
+        canvas.getContext('2d').drawImage(image, 0, 0);
+        let uri = canvas.toDataURL('image/png');
+        callback(uri);
+    };
+
+    image.crossOrigin = 'anonymous';
+    image.src = url;
+}
