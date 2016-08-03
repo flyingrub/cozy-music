@@ -3,6 +3,7 @@ import ContentView from './content';
 import PlayerControlsView from './playerControls';
 import PlayerControlsExtendedView from './playerControlsExtended';
 import PlayerTimelineView from './playerTimeline';
+import DialogView from './dialog';
 import ToolbarView from './toolbar';
 import application from '../application'
 
@@ -18,6 +19,7 @@ const AppLayout = Mn.LayoutView.extend({
     },
 
     regions: {
+        dialog: '[role="dialog"]',
         toolbar: '[role="toolbar"]',
         content: '[role="contentinfo"]',
         playerControls: '.play-controls',
@@ -44,6 +46,15 @@ const AppLayout = Mn.LayoutView.extend({
         this.showChildView('playerTimeline', new PlayerTimelineView({
             model: application.appState
         }));
+
+        application.channel.reply('dialog', this.showDialog, this);
+    },
+
+    showDialog(dialog) {
+        this.showChildView(
+            'dialog',
+            new DialogView(dialog)
+        );
     }
 });
 
