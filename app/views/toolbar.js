@@ -22,7 +22,7 @@ const Toolbar = Mn.LayoutView.extend({
     },
 
     events: {
-        'click #sync-files': syncFiles,
+        'click #sync-files': 'sync',
         'click @ui.importSC': 'importStream',
         'click @ui.search': 'focusInput',
         'focusout @ui.importSC': 'focusoutImportSc',
@@ -52,6 +52,10 @@ const Toolbar = Mn.LayoutView.extend({
             this.ui.importText.val('');
             this.focusoutImportSc();
         }
+    },
+
+    sync() {
+        application.channel.request('sync');
     },
 
     debounceSearch: _.debounce((val) => {

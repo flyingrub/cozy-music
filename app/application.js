@@ -21,6 +21,9 @@ let Application = Mn.Application.extend({
     },
 
     onBeforeStart () {
+        // Prevent multiple sync to occur
+        this.syncing = false;
+
         this.allTracks = new Playlist({
             title: 'All Songs',
             tracks: new Tracks(),
@@ -32,7 +35,9 @@ let Application = Mn.Application.extend({
             });
             this.fetchTracks(downloadPromise, loadTrackResolve);
         });
-        this.loadTrack.then(()=> { syncFiles(); });
+        this.loadTrack.then(()=> {
+            this.channel.request('sync');
+        });
 
         this.appState = new AppState();
 
@@ -78,6 +83,13 @@ let Application = Mn.Application.extend({
         });
     },
 
+    sync() {
+        if (!this.syncing) {
+            this.syncing = true;
+            syncFiles();
+        }
+    },
+
     onStart () {
         if (Backbone.history) {
             Backbone.history.start({pushState: false});
@@ -91,6 +103,11 @@ let Application = Mn.Application.extend({
             if (isScrollKey && e.target == document.body) {
                 e.preventDefault();
             }
+        });
+
+        // Allow to Sync the music with the files stored in CouchDB
+        this.channel.reply('sync', () => {
+            this.sync();
         });
     }
 });
