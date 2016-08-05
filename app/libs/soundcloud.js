@@ -36,7 +36,7 @@ class Soundcloud {
 
     // Check if the track is already in the database
     checkIfAlreadyExist(track, playlist) {
-        cozysdk.run('Track', 'soundcloud', {}, (err, tracks) => {
+        cozysdk.queryView('Track', 'soundcloud', {}, (err, tracks) => {
             if (tracks) {
                 let trackID = undefined;
                 for (let i = 0; i < tracks.length; i++) {

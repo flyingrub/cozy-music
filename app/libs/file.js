@@ -4,7 +4,7 @@ import cozysdk from 'cozysdk-client';
 import async from 'async';
 
 export function syncFiles() {
-    cozysdk.run('Track', 'oldDoctype', {}, (err, tracks) => {
+    cozysdk.queryView('Track', 'oldDoctype', {}, (err, tracks) => {
         if (tracks.length > 0) {
             createCozicFolder(tracks);
         } else {
@@ -13,19 +13,7 @@ export function syncFiles() {
     });
 }
 
-function fileSynchronisation() {
-    let notification = {
-        status: 'loading',
-        message: t('retrieving all new and deleted files')
-    }
-    application.channel.request('notification', notification);
-    cozysdk.run('File', 'music', {}, (err, files) => {
-        if (files) {
-            getAllTracksFileId(files);
-        }
-    });
-}
-
+// Cozic Synchronisation \\
 // Create Cozic Folder
 function createCozicFolder(tracks) {
     let notification = {
@@ -33,12 +21,12 @@ function createCozicFolder(tracks) {
         message: t('importing cozic files')
     }
     application.channel.request('notification', notification);
-    cozysdk.defineRequest('Folder', 'Cozic', (doc) => {
+    cozysdk.defineView('Folder', 'Cozic', (doc) => {
             if (doc.name == 'Cozic') {
                 emit(doc._id, doc);
             }
         }, (error, response) => {
-            cozysdk.run('Folder', 'Cozic', {}, (err, folder) => {
+            cozysdk.queryView('Folder', 'Cozic', {}, (err, folder) => {
                 if (folder.length == 0) {
                     let folder = {
                         "path": "",
@@ -122,63 +110,126 @@ function migrateTrack(track, binary, callback) {
     });
 }
 
+// File Synchronisation \\
+const FILES_LIMIT = 200;
+
+// Start the file synchronisation
+function fileSynchronisation() {
+    let notification = {
+        status: 'loading',
+        message: t('retrieving all new and deleted files')
+    }
+    application.channel.request('notification', notification);
+
+    let allMusicFiles = [];
+    let allFilesDownloaded = new Promise((resolve, reject) => {
+        let downloadPromise = cozysdk.queryView(
+            'File',
+            'music',
+            { limit: FILES_LIMIT }
+        );
+        fetchFiles(allMusicFiles, downloadPromise, resolve, reject);
+    });
+
+    allFilesDownloaded.then((res) => {
+        getAllTracksFileId(res);
+    });
+    allFilesDownloaded.catch(() => {
+        errorNotification();
+    });
+}
+
+// Get all Music Files by FILES_LIMIT
+function fetchFiles(allMusicFiles, downloadPromise, resolve, reject) {
+    // If an error occur reject the global promise
+    downloadPromise.catch(() => {
+        reject();
+    })
+    downloadPromise.then((res) => {
+        // Add the new track
+        let allFiles = allMusicFiles.concat(res);
+        if(res.length == FILES_LIMIT) {
+            let downloadPromise = cozysdk.queryView(
+                'File',
+                'music',
+                { limit: FILES_LIMIT, skip: allFiles.length }
+            );
+            fetchFiles(allFiles, downloadPromise, resolve, reject)
+        } else {
+            resolve(allFiles);
+        }
+    });
+}
 
 // Get all needed variable
 function getAllTracksFileId(musicFiles) {
-    cozysdk.run('Track', 'file', {}, (err, tracks) => {
-        let tracksFileId = [];
-        let allTracksFiles = [];
-        let musicFilesFileId = [];
+    cozysdk.queryView('Track', 'file', {}, (err, tracks) => {
+        if (err) {
+            errorNotification();
+            return;
+        }
         if (tracks) {
-            for (let i = 0; i < tracks.length; i++) {
-                tracksFileId.push(tracks[i].value.ressource.fileID);
-                allTracksFiles.push(new Track(tracks[i].value));
-            }
-            for (let i = 0; i < musicFiles.length; i++) {
-                musicFilesFileId.push(musicFiles[i].value._id);
-            }
-            deleteTrack(allTracksFiles, musicFilesFileId, musicFiles, tracksFileId);
+            deleteTrack(musicFiles, tracks);
         }
     });
 }
 
 // Delete track if the files associated is deleted too
 // Or if the track is a duplication
-function deleteTrack(allTracks, musicFilesFileId, musicFiles, tracksFileId) {
+function deleteTrack(musicFiles, tracks) {
+    let notification = {
+        status: 'loading',
+        message: t('deleting old tracks')
+    }
+    application.channel.request('notification', notification);
     let toDelete= [];
-    for (let i = 0; i < allTracks.length; i++) {
-        let t = allTracks[i];
-        let duplication = allTracks.filter((track) => {
-            return track.get('ressource').fileID == t.get('ressource').fileID;
+    let musicFilesFileId = musicFiles.map((track) => { return track.value._id });
+    for (let i = 0; i < tracks.length; i++) {
+        let track = tracks[i];
+
+        // Tracks.value is the file id associated to this track
+        // Tracks.id is the _id of the track
+        let duplication = tracks.filter((t) => {
+            return track.value == t.value;
         });
         let isDuplication = duplication.length > 1;
-        let isDeleted = !_.includes(musicFilesFileId, t.get('ressource').fileID)
+        let isDeleted = !_.includes(musicFilesFileId, track.value);
 
         if (isDuplication || isDeleted) {
-            toDelete.push(t)
+            let promiseDel = cozysdk.destroy('Track', track.id);
+            promiseDel.then(() => {
+                application.allTracks.get('tracks').remove(track.id);
+            });
+            toDelete.push(promiseDel)
         }
     }
-    toDelete.forEach((track, index, array) => {
-        track.destroy({ success: () => {
-            application.allTracks.get('tracks').remove(track);
-            if (index + 1 == array.length) {
-                deleteTrackEnded(musicFiles, tracksFileId);
-            }
-        }});
+    Promise.all(toDelete).then(() => {
+        deleteTrackEnded(musicFiles, tracks);
     });
-    if (toDelete.length == 0) {
-        deleteTrackEnded(musicFiles, tracksFileId);
+}
+
+function deleteTrackEnded(musicFiles, tracks) {
+    let notification = {
+        status: 'loading',
+        message: t('saving new tracks')
     }
+    application.channel.request('notification', notification);
+    saveTrack(musicFiles, tracks);
 }
 
 // Save the track if it's a new file that has not been synced
-function saveTrack(musicFiles, tracksFileId) {
-    let files = musicFiles;
+function saveTrack(files, tracks) {
     let toSave = [];
+    let filesID = tracks.map((track) => { return track.value });
+
     for (let i = 0; i < files.length; i++) {
         let file = files[i].value;
         let trackname = file.name; // TO DO : ID3TAG
         let fileid = file._id;
+
+        // if track already exist don't save it.
+        if (_.includes(filesID, fileid)) continue;
+
         let t = new Track({
             metas: {
                 title: trackname
@@ -194,35 +245,26 @@ function saveTrack(musicFiles, tracksFileId) {
             t.set('metas', file.audio_metadata);
         }
 
-        if (!_.includes(tracksFileId, fileid)) { // does not contains fileid
-            toSave.push(t);
-        }
+        toSave.push(application.allTracks.get('tracks').create(t));
     }
-    toSave.forEach((track, index, array) => {
-        application.allTracks.get('tracks').create(track, { success: () => {
-            if (index + 1 == array.length) {
-                saveTrackEnded();
-            }
-        }});
-    });
-    if (toSave.length == 0) {
+    Promise.all(toSave).then(() => {
         saveTrackEnded();
-    }
-}
-
-function deleteTrackEnded(musicFiles, tracksFileId) {
-    let notification = {
-        status: 'loading',
-        message: t('all deleted files removed, saving new tracks')
-    }
-    application.channel.request('notification', notification);
-    saveTrack(musicFiles, tracksFileId);
+    });
 }
 
 function saveTrackEnded() {
     let notification = {
         status: 'ok',
         message: t('all your audio files are synced')
+    }
+    application.channel.request('notification', notification);
+    application.syncing = false;
+}
+
+function errorNotification() {
+    let notification = {
+        status: 'ko',
+        message: t('an error occured during the synchronisation')
     }
     application.channel.request('notification', notification);
     application.syncing = false;

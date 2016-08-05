@@ -39,6 +39,7 @@ let Application = Mn.Application.extend({
             this.channel.request('sync');
         });
 
+
         this.appState = new AppState();
 
         this.upNext = new Playlist({

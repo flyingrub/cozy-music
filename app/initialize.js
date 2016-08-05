@@ -23,7 +23,7 @@ function init(err, instances) {
     application.start();
 }
 
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', () => {
     // Cozy instance contains info about the cozy, e.g the language preference
-    cozysdk.run('cozyinstance', 'all', {}, init);
+    cozysdk.queryView('cozyinstance', 'all', {}, init);
 });

@@ -9,20 +9,16 @@ const Tracks = Backbone.Collection.extend({
 
     sync(method, model, options) {
         if (method == 'read') {
-            let promise = new Promise((resolve, reject) => {
-                cozysdk.run('Track', 'playable', options.data, (err, res) => {
-                    if (res) {
-                        if (options && options.success) {
-                            options.success(res);
-                            resolve(res);
-                        }
-                    } else {
-                        if (options && options.error) {
-                            options.error(err);
-                            reject(err);
-                        }
-                    }
-                });
+            let promise = cozysdk.queryView('Track', 'playable', options.data)
+            promise.then((res) => {
+                if (options && options.success) {
+                    options.success(res);
+                }
+            })
+            promise.catch((err) => {
+                if (options && options.error) {
+                    options.error(err);
+                }
             });
             return promise;
         }
@@ -38,42 +34,42 @@ const Tracks = Backbone.Collection.extend({
 });
 
 // COZYSDK : Requests \\
-cozysdk.defineRequest('File', 'music', (doc) => {
+cozysdk.defineView('File', 'music', (doc) => {
         if (doc.class == 'music') {
             emit(doc.name, doc);
         }
     }, (error, response) => {
 });
 
-cozysdk.defineRequest('Track', 'all', (doc) => {
+cozysdk.defineView('Track', 'all', (doc) => {
     if (!doc._attachments) {
         emit(doc._id, doc);
     }
     }, (error, response) => {
 });
 
-cozysdk.defineRequest('Track', 'oldDoctype', (doc) => {
+cozysdk.defineView('Track', 'oldDoctype', (doc) => {
         if (doc.title) {
             emit(doc._id, doc);
         }
     }, (error, response) => {
 });
 
-cozysdk.defineRequest('Track', 'playable', (doc) => {
+cozysdk.defineView('Track', 'playable', (doc) => {
         if (!doc.hidden && doc.metas) {
             emit(doc.metas.title, doc);
         }
     }, (error, response) => {
 });
 
-cozysdk.defineRequest('Track', 'file', (doc) => {
+cozysdk.defineView('Track', 'file', (doc) => {
         if (doc.ressource.type == 'file') {
-            emit(doc._id, doc);
+            emit(doc._id, doc.ressource.fileID);
         }
     }, (error, response) => {
 });
 
-cozysdk.defineRequest('Track', 'soundcloud', (doc) => {
+cozysdk.defineView('Track', 'soundcloud', (doc) => {
         if (doc.ressource.type == 'soundcloud') {
             emit(doc._id, doc);
         }

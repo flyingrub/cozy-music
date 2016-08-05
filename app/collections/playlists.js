@@ -25,20 +25,16 @@ const Playlists = Backbone.Collection.extend({
 
     sync(method, model, options) {
         if (method == 'read') {
-            let promise = new Promise((resolve, reject) => {
-                cozysdk.run('Playlist', 'all', {}, (err, res) => {
-                    if (res) {
-                        if (options && options.success) {
-                            options.success(res);
-                            resolve(res);
-                        }
-                    } else {
-                        if (options && options.error) {
-                            options.error(err);
-                            reject(err);
-                        }
-                    }
-                });
+            let promise = cozysdk.queryView('Playlist', 'all', options.data)
+            promise.then((res) => {
+                if (options && options.success) {
+                    options.success(res);
+                }
+            })
+            promise.catch((err) => {
+                if (options && options.error) {
+                    options.error(err);
+                }
             });
             return promise;
         }
@@ -53,7 +49,7 @@ const Playlists = Backbone.Collection.extend({
     }
 });
 
-cozysdk.defineRequest('Playlist', 'all', (doc) => {
+cozysdk.defineView('Playlist', 'all', (doc) => {
         emit(doc._id, doc);
     }, (error, response) => {
 });
