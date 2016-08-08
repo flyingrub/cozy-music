@@ -7,7 +7,7 @@ import AppLayout from './views/app_layout';
 import AppState from './models/appState';
 import Radio from 'backbone.radio';
 import Router from './routes/index';
-import { syncFiles } from './libs/file';
+import { syncFiles, hardSync } from './libs/file';
 
 
 require('./styles/app.styl');
@@ -22,7 +22,7 @@ let Application = Mn.Application.extend({
 
     onBeforeStart () {
         // Prevent multiple sync to occur
-        this.syncing = false;
+        this.syncing = true;
 
         this.allTracks = new Playlist({
             title: 'All Songs',
@@ -36,6 +36,7 @@ let Application = Mn.Application.extend({
             this.fetchTracks(downloadPromise, loadTrackResolve);
         });
         this.loadTrack.then(()=> {
+            this.syncing = false;
             this.channel.request('sync');
         });
 
@@ -84,10 +85,14 @@ let Application = Mn.Application.extend({
         });
     },
 
-    sync() {
+    sync(hard) {
         if (!this.syncing) {
             this.syncing = true;
-            syncFiles();
+            if (hard) {
+                hardSync();
+            } else {
+               syncFiles();
+            }
         }
     },
 
@@ -107,9 +112,7 @@ let Application = Mn.Application.extend({
         });
 
         // Allow to Sync the music with the files stored in CouchDB
-        this.channel.reply('sync', () => {
-            this.sync();
-        });
+        this.channel.reply('sync', this.sync.bind(this));
     }
 });
 

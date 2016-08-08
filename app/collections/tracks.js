@@ -69,6 +69,12 @@ cozysdk.defineView('Track', 'file', (doc) => {
     }, (error, response) => {
 });
 
+cozysdk.defineView('Track', 'allFileTrack', (doc) => {
+    if (doc.ressource.type == 'file') {
+        emit(doc._id, doc);
+    }
+}, callback);
+
 cozysdk.defineView('Track', 'soundcloud', (doc) => {
         if (doc.ressource.type == 'soundcloud') {
             emit(doc._id, doc);
