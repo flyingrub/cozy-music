@@ -54,8 +54,12 @@ const Toolbar = Mn.LayoutView.extend({
         }
     },
 
-    sync() {
-        application.channel.request('sync');
+    sync(e) {
+        if (e.ctrlKey) {
+            application.channel.request('sync' , true); // hard sync
+        } else {
+            application.channel.request('sync');
+        }
     },
 
     debounceSearch: _.debounce((val) => {

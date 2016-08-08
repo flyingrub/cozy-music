@@ -4,6 +4,11 @@ import cozysdk from 'cozysdk-client';
 import async from 'async';
 
 export function syncFiles() {
+    let notification = {
+        status: 'loading',
+        message: t('syncing')
+    }
+    application.channel.request('notification', notification);
     cozysdk.queryView('Track', 'oldDoctype', {}, (err, tracks) => {
         if (tracks.length > 0) {
             createCozicFolder(tracks);
@@ -11,6 +16,21 @@ export function syncFiles() {
             fileSynchronisation();
         }
     });
+}
+
+// Delete all Track imported from files and Sync
+export function hardSync() {
+    let notification = {
+        status: 'loading',
+        message: t('hard syncing')
+    }
+    application.channel.request('notification', notification);
+    cozysdk.destroyByView('Track', 'allFileTrack').then(() => {
+        application.allTracks.resetTrack();
+        syncFiles();
+    }).catch((err) => {
+        errorNotification(err);
+    })
 }
 
 // Cozic Synchronisation \\
@@ -134,8 +154,8 @@ function fileSynchronisation() {
     allFilesDownloaded.then((res) => {
         getAllTracksFileId(res);
     });
-    allFilesDownloaded.catch(() => {
-        errorNotification();
+    allFilesDownloaded.catch((err) => {
+        errorNotification(err);
     });
 }
 
@@ -165,7 +185,7 @@ function fetchFiles(allMusicFiles, downloadPromise, resolve, reject) {
 function getAllTracksFileId(musicFiles) {
     cozysdk.queryView('Track', 'file', {}, (err, tracks) => {
         if (err) {
-            errorNotification();
+            errorNotification(err);
             return;
         }
         if (tracks) {
@@ -198,7 +218,7 @@ function deleteTrack(musicFiles, tracks) {
         if (isDuplication || isDeleted) {
             let promiseDel = cozysdk.destroy('Track', track.id);
             promiseDel.then(() => {
-                application.allTracks.get('tracks').remove(track.id);
+                application.allTracks.removeTrack(track.id);
             });
             toDelete.push(promiseDel)
         }
@@ -261,7 +281,8 @@ function saveTrackEnded() {
     application.syncing = false;
 }
 
-function errorNotification() {
+function errorNotification(err) {
+    console.log(err);
     let notification = {
         status: 'ko',
         message: t('an error occured during the synchronisation')
