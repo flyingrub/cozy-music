@@ -116,7 +116,9 @@ const TrackView = Mn.LayoutView.extend({
                 endIndex = temp;
             }
             for (let i = startIndex; i <= endIndex; i++){
-                application.selected.addTrack(collection.at(i));
+                let id = collection.at(i).get('_id');
+                let track = application.allTracks.get('tracks').get(id);
+                application.selected.addTrack(track);
             }
         } else if (selectedTracks.length != 0) {
             application.selected.resetTrack(this.model);
@@ -274,7 +276,7 @@ const TrackView = Mn.LayoutView.extend({
             let track = collection.get(this.model.get('_id'));
             orderTrack = collection.indexOf(track);
             if (sort.direction == 'reverse') {
-                orderTrack = collection.length - orderTrack + 1
+                orderTrack = collection.length - orderTrack + 1;
             }
         } else if (type == 'playlist') {
             let id = currentPlaylist.get('_id')

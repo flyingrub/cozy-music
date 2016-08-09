@@ -90,9 +90,23 @@ const Playlist = Backbone.Model.extend({
     addCurrentPlaylistToUpNext() {
         let currentPlaylist = application.appState.get('currentPlaylist');
         let currentTracks = currentPlaylist.get('tracks');
-        currentTracks.each(track => {
-            this.addTrack(track);
-        });
+        let sort = application.appState.get('sort');
+        let tracksToAdd = sort.by;
+        if (sort.by != 'default') {
+            if (sort.direction == 'reverse') {
+                tracksToAdd = sort.by.last(sort.by.length).reverse();
+            }
+            _.each(tracksToAdd, track => {
+                let t = currentTracks.get(track.get('_id'))
+                if (t) {
+                    this.addTrack(t);
+                }
+            });
+        } else {
+            currentTracks.each(track => {
+                this.addTrack(track);
+            });
+        }
     },
 
     // Add a track to the playlist
