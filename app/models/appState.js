@@ -39,8 +39,7 @@ const AppState = Backbone.Model.extend({
 
             // Initialize upNext
             let tracks = this.get('upNext');
-            _.each(tracks, (t) => {
-                let id = t._id;
+            _.each(tracks, (id) => {
                 let track = application.allTracks.get('tracks').get(id);
                 application.upNext.addTrack(track);
             });
@@ -60,7 +59,27 @@ const AppState = Backbone.Model.extend({
     // Save data from the localStorage
     save() {
         this.set('currentTime', application.audio.currentTime);
-        this.set('upNext', application.upNext.get('tracks'));
+
+        // Save only id of track in upNext
+        let MAX_TRACK_IN_UPNEXT = 500;
+        let upNext = application.upNext.get('tracks');
+        let startOffset = upNext.indexOf(this.get('currentTrack'));
+        let saveUpNext = [];
+
+        // If upNext is not empty and we have enough space
+        if (startOffset == -1 || upNext.length < MAX_TRACK_IN_UPNEXT) {
+            startOffset = 0;
+        }
+
+        // Add all track id in an array
+        let max = MAX_TRACK_IN_UPNEXT + startOffset;
+        for (let i = startOffset; i < max && i < upNext.length; i++) {
+            let track = upNext.at(i);
+            saveUpNext.push(track.get('_id'));
+        }
+        this.set('upNext', saveUpNext);
+
+        // Save in localstorage
         var storage = window.localStorage;
         let save = this.toJSON();
         delete save.currentPlaylist; // Don't save currentPlaylist

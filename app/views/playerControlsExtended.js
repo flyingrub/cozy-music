@@ -38,7 +38,12 @@ const ControlsExtended = Mn.ItemView.extend({
             this.volumeDown = false;
         });
         let audio = application.audio;
-        audio.volume = application.appState.get('currentVolume');
+        let mute = application.appState.get('mute');
+         if (mute) {
+            audio.volume = 0;
+        } else {
+            audio.volume = application.appState.get('currentVolume');
+        }
     },
 
     toggleRepeat() {
