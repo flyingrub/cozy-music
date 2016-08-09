@@ -98,6 +98,7 @@ const Player = Mn.ItemView.extend({
                 let track = this.model.get('currentTrack');
                 let dialog = {
                     accept: () => {
+                        application.allTracks.removeTrack(track);
                         track.set('hidden', true);
                         track.save();
                     },
